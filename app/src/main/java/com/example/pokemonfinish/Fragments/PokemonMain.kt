@@ -13,11 +13,13 @@ import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.fragmentViewModel
 import com.example.pokemonfinish.Database.PokemonDatas
 import com.example.pokemonfinish.Database.PokemonList
+import com.example.pokemonfinish.Networking.Api
 import com.example.pokemonfinish.Networking.DownloadPokemon
 
 import com.example.pokemonfinish.R
 import com.example.pokemonfinish.databinding.FragmentPokemonMainBinding
 import com.example.pokemonfinish.pokemon
+import de.ffuf.android.architecture.binding.copy
 import de.ffuf.android.architecture.mvrx.MvRxEpoxyController
 import de.ffuf.android.architecture.mvrx.MvRxViewModel
 import de.ffuf.android.architecture.mvrx.simpleController
@@ -34,7 +36,7 @@ import retrofit2.Response
  */
 //Data Class Later Database
 
-data class PokemonState(val id: Int=0, val name: String = "Bisasam"): MvRxState
+data class PokemonState(val pokeList: List<PokemonDatas> = emptyList()): MvRxState
 
 
 class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(initialState) {
@@ -67,7 +69,6 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
 
                             override fun onResponse(call: Call<PokemonDatas>, response: Response<PokemonDatas>) {
 
-
                                 val allData = response.body()
                                 realm.beginTransaction()
 
@@ -75,9 +76,20 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
 
                                 Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
 
-                                realm.where(PokemonDatas::class.java).findAll()
+                                //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
                                 realm.commitTransaction()
 
+
+                                allData?.let {
+                                    setState {
+                                        copy(pokeList= pokeList.copy {
+                                            this.sortBy {
+                                                it.id
+                                            }
+                                            add(it)
+                                        })
+                                    }
+                                }
                             }
                         })
                     }
@@ -86,6 +98,10 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         })
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        realm.close()
+    }
 }
 
 
@@ -104,17 +120,20 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
         viewModel.getNetworkStuff()
 
-        setHasOptionsMenu(true)
+        //setHasOptionsMenu(true)
 
         binding.recyclerView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     }
 
     override fun epoxyController(): MvRxEpoxyController {
         return simpleController(viewModel) { state ->
-            pokemon {
-                id("name")
-                title("${state.name}")
-            }
+          state.pokeList.forEach {
+              pokemon {
+                  id(it.id)
+                  title(it.name)
+                  index(it.id.toString())
+              }
+          }
         }
     }
 }

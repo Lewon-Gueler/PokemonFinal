@@ -9,6 +9,7 @@ import androidx.navigation.ui.NavigationUI
 import com.example.pokemonfinish.databinding.ActivityMainBinding
 import com.facebook.drawee.backends.pipeline.Fresco
 import de.ffuf.android.architecture.ui.base.binding.activities.BindingMvrxActivity
+import io.realm.Realm
 
 class MainActivity : BindingMvrxActivity<ActivityMainBinding>() {
     override fun invalidate() {
@@ -26,7 +27,8 @@ class MainActivity : BindingMvrxActivity<ActivityMainBinding>() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-       (application as ExampleApplication).applicationContext
+        //Initialite Realm
+        Realm.init(this)
 
         //Fresco Libary Initialize
         Fresco.initialize(this)
