@@ -8,6 +8,7 @@
 
         <variable name="title" type="String" />
         <variable name="index" type="String" />
+        <variable name="onClick" type="android.view.View.OnClickListener"/>
 
     </data>
 
@@ -19,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:cardElevation="1dp"
         app:cardUseCompatPadding="true"
+        android:onClick="@{onClick}"
         app:layout_constraintTop_toTopOf="parent" >
 
         <androidx.constraintlayout.widget.ConstraintLayout

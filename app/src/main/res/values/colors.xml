@@ -6,4 +6,10 @@
     <color name="colorWhite">#FFF</color>
     <color name="colorDarkTheme">#121212</color>
     <color name="colorDarkSecond">#212121</color>
+
+    <color name="colorRed">#FF6133</color>
+    <color name="colorBlue">#35B2FE</color>
+    <color name="colorGreen">#35FE53</color>
+
+
 </resources>

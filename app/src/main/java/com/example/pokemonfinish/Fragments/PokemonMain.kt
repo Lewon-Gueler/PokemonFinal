@@ -1,12 +1,14 @@
 package com.example.pokemonfinish.Fragments
 
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.mvrx.MvRxState
@@ -15,9 +17,9 @@ import com.example.pokemonfinish.Database.PokemonDatas
 import com.example.pokemonfinish.Database.PokemonList
 import com.example.pokemonfinish.Networking.Api
 import com.example.pokemonfinish.Networking.DownloadPokemon
-
 import com.example.pokemonfinish.R
 import com.example.pokemonfinish.databinding.FragmentPokemonMainBinding
+import com.example.pokemonfinish.databinding.ListItemPokemonBinding
 import com.example.pokemonfinish.pokemon
 import de.ffuf.android.architecture.binding.copy
 import de.ffuf.android.architecture.mvrx.MvRxEpoxyController
@@ -48,7 +50,7 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         val service = pokemonNetwork.service
 
         //First Server Request
-        service.getAllPokemonDatas(10,0).enqueue(object : Callback<PokemonList> {
+        service.getAllPokemonDatas(25,0).enqueue(object : Callback<PokemonList> {
             override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
             }
@@ -120,9 +122,9 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
         viewModel.getNetworkStuff()
 
-        //setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
 
-        binding.recyclerView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+        //binding.recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
     override fun epoxyController(): MvRxEpoxyController {
@@ -130,8 +132,20 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
           state.pokeList.forEach {
               pokemon {
                   id(it.id)
+
+                  //Name and ID
                   title(it.name)
                   index(it.id.toString())
+
+                  //Binding Image
+                  onBind { model, view, position ->
+                      (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
+                          drawee.iVShinyFront.setImageURI(it.imageUri)
+                      }
+                  }
+                  onClick { view : View ->
+                     view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonDetail)
+                  }
               }
           }
         }
