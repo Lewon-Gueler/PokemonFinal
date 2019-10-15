@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <variable
+            name="color"
+            type="String" />
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorRed">
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.airbnb.epoxy.EpoxyRecyclerView
+            android:background="@color/colorRed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerView2"/>
 
 </layout>

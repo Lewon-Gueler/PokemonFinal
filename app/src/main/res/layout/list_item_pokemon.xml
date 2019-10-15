@@ -16,9 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardBackgroundColor="@color/colorDarkTheme"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:cardElevation="1dp"
         app:cardUseCompatPadding="true"
         android:onClick="@{onClick}"
         app:layout_constraintTop_toTopOf="parent" >
