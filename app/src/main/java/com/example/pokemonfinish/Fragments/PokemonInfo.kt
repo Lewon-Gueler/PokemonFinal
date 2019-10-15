@@ -10,25 +10,30 @@ import android.view.ViewGroup
 import androidx.core.os.postDelayed
 
 import com.example.pokemonfinish.R
+import com.example.pokemonfinish.databinding.FragmentPokemonInfoBinding
+import de.ffuf.android.architecture.ui.base.binding.fragments.MvrxFragment
 
 /**
  * A simple [Fragment] subclass.
  */
-class PokemonInfo : Fragment() {
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_pokemon_info, container, false)
-    }
+class PokemonInfo : MvrxFragment<FragmentPokemonInfoBinding>() {
+    override val layoutId: Int
+        get() = R.layout.fragment_pokemon_info
 
     override fun onResume() {
         super.onResume()
         Handler().postDelayed(200) {
             fragmentManager?.let {
-                FragmentPokemonDetail(this@PokemonInfo)
-                    .show(it,"dialog")
+                val dialog = FragmentPokemonDetail(this@PokemonInfo)
+
+                dialog.isCancelable = false
+                dialog.show(it, "fdsafdasf")
+
 
             }
         }
     }
+
+
 
 }

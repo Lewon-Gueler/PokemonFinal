@@ -68,7 +68,6 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
                             override fun onFailure(call: Call<PokemonDatas>, t: Throwable) {
 
                             }
-
                             override fun onResponse(call: Call<PokemonDatas>, response: Response<PokemonDatas>) {
 
                                 val allData = response.body()
@@ -80,7 +79,6 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
 
                                 //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
                                 realm.commitTransaction()
-
 
                                 allData?.let {
                                     setState {
@@ -143,6 +141,8 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                           drawee.iVShinyFront.setImageURI(it.imageUri)
                       }
                   }
+
+                  //On CLick Listener which load a new fragment
                   onClick { view : View ->
                      view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonInfo)
                   }

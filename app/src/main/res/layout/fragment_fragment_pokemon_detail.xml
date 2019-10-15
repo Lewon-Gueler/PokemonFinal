@@ -13,9 +13,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/ConstContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorDarkTheme">
+        android:background="@drawable/layout_bg">
 
 
         <com.facebook.drawee.view.SimpleDraweeView
@@ -36,6 +37,7 @@
             android:gravity="center"
             android:textColor="@color/colorWhite"
             android:textSize="40dp"
+            android:text="@{title}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iVFullImage" />
@@ -53,7 +55,6 @@
 
         <TextView
             android:id="@+id/textHeigth"
-            android:text="@{title}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -64,13 +65,12 @@
 
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="350dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
