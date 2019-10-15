@@ -144,7 +144,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                       }
                   }
                   onClick { view : View ->
-                     view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonDetail)
+                     view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonInfo)
                   }
               }
           }

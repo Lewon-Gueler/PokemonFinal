@@ -11,15 +11,15 @@
         android:label="fragment_pokemon_main"
         tools:layout="@layout/fragment_pokemon_main" >
         <action
-            android:id="@+id/action_pokemonMain_to_pokemonDetail"
-            app:destination="@+id/pokemonDetail"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:popUpTo="@+id/pokemonMain" />
+            android:id="@+id/action_pokemonMain_to_pokemonInfo"
+            app:destination="@id/pokemonInfo"
+            app:popUpTo="@+id/pokemonMain"
+            app:popUpToInclusive="true" />
     </fragment>
-
     <fragment
-        android:id="@+id/pokemonDetail"
-        android:name="com.example.pokemonfinish.Fragments.PokemonDetail"
-        android:label="PokemonDetail" />
+        android:id="@+id/pokemonInfo"
+        android:name="com.example.pokemonfinish.Fragments.PokemonInfo"
+        android:label="fragment_pokemon_info"
+        tools:layout="@layout/fragment_pokemon_info" />
 
 </navigation>
