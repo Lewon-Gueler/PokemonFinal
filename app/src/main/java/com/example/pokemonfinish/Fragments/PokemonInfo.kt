@@ -28,6 +28,9 @@ import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
 import com.example.pokemonfinish.databinding.*
 import kotlinx.android.synthetic.main.list_item_datas.*
+import com.google.android.material.tabs.TabLayout
+
+
 
 
 /**
@@ -88,7 +91,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
             tabs {
                 id()
 //                onBind{model, view, position ->
-//                    (view.dataBinding as? ListItemTabsBinding)?.TabLayout?.onFocusChangeListener
+//                    (view.dataBinding as? ListItemTabsBinding)?.TabLayout?.setOnTabSelectedListener() Maybe??
 //                }
 
 
