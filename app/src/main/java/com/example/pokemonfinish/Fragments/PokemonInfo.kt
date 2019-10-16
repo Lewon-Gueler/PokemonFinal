@@ -90,12 +90,26 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 //                onBind{model, view, position ->
 //                    (view.dataBinding as? ListItemTabsBinding)?.TabLayout?.onFocusChangeListener
 //                }
+
+
             }
 
 
 
             states {
                 id()
+                baseState("30")
+            }
+
+            evolutions {
+                id()
+                onBind { model, view, position ->
+                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyFront?.setImageURI(state.pokemon?.sprites?.front_shiny)
+                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyBack?.setImageURI(state.pokemon?.sprites?.back_shiny)
+                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWFront?.setImageURI(state.pokemon?.sprites?.front_shiny_female)
+                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWBack?.setImageURI(state.pokemon?.sprites?.back_shiny_female)
+                }
+
             }
 
             state.pokemon?.moves?.forEach {
@@ -104,6 +118,10 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     title(it.move?.name)
                 }
             }
+
+
+
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.pokemonfinish.Fragments
 
 
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
@@ -154,17 +155,19 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                       (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
                           drawee.iVShinyFront.setImageURI(it.imageUri)
 
+                          drawee.typ1.setBackgroundColor(Color.BLUE)
+
                       }
                   }
 
-                  it.types.forEach {
-
-                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) }
-
-                      typ1(typ?.key)
-                      color(typ?.colorType)
-
-                  }
+//                  it.types.forEach {
+//
+//                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) }
+//
+//                      typ1(typ?.key)
+//                      color(typ?.colorType)
+//
+//                  }
 
                   //On CLick Listener which load a new fragment
                   onClick { view : View ->
@@ -174,18 +177,15 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                       )
                   }
 
-
-
-//
-//                  //Checking the types
-//                  if (it.types.size == 2) {
-//                      typ1(it.types.get(0)?.type?.name)
-//                      typ2(it.types.get(1)?.type?.name)
-//                  } else {
-//                      typ1(it.types.get(0)?.type?.name)
-//                      // Setting visisbilty false
-//                      typ2("")
-//                  }
+                  //Checking the types
+                  if (it.types.size == 2) {
+                      typ1(it.types.get(0)?.type?.name)
+                      typ2(it.types.get(1)?.type?.name)
+                  } else {
+                      typ1(it.types.get(0)?.type?.name)
+                      // Setting visisbilty false
+                      typ2("")
+                  }
 
               }
           }
