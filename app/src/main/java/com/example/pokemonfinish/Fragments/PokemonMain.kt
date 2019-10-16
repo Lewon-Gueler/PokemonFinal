@@ -3,15 +3,20 @@ package com.example.pokemonfinish.Fragments
 
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
+import com.airbnb.mvrx.MvRx
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.fragmentViewModel
+import com.example.pokemonfinish.ColorsTyp
 import com.example.pokemonfinish.Database.PokemonDatas
 import com.example.pokemonfinish.Database.PokemonList
+import com.example.pokemonfinish.Networking.Api
 import com.example.pokemonfinish.Networking.DownloadPokemon
 import com.example.pokemonfinish.R
 import com.example.pokemonfinish.databinding.FragmentPokemonMainBinding
@@ -23,6 +28,8 @@ import de.ffuf.android.architecture.mvrx.MvRxViewModel
 import de.ffuf.android.architecture.mvrx.simpleController
 import de.ffuf.android.architecture.ui.base.binding.fragments.EpoxyFragment
 import io.realm.Realm
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.synthetic.main.list_item_pokemon.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -70,24 +77,10 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
                             override fun onResponse(call: Call<PokemonDatas>, response: Response<PokemonDatas>) {
 
                                 val allData = response.body()
-                                realm.beginTransaction()
 
-                                realm.copyToRealmOrUpdate(allData)
+                                startRealm(allData)
 
-                                Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
-
-                                //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
-                                realm.commitTransaction()
-                                allData?.let {
-                                    setState {
-                                        copy(pokeList= pokeList.copy {
-                                            this.sortBy {
-                                                it.id
-                                            }
-                                            add(it)
-                                        })
-                                    }
-                                }
+                                setOfState(allData)
                             }
                         })
                     }
@@ -96,10 +89,34 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         })
     }
 
+
     override fun onCleared() {
         super.onCleared()
         realm.close()
     }
+
+
+    fun setOfState(datas: PokemonDatas?) {
+        datas?.let {
+            setState {
+                copy(pokeList= pokeList.copy {
+                    this.sortBy {
+                        it.id
+                    }
+                    add(it)
+                })
+            }
+        }
+    }
+
+    fun startRealm(allData: PokemonDatas?) {
+        realm.beginTransaction()
+        realm.copyToRealmOrUpdate(allData)
+        Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
+        //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
+        realm.commitTransaction()
+    }
+
 }
 
 
@@ -120,7 +137,6 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
         setHasOptionsMenu(true)
 
-        //binding.recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
     }
 
     override fun epoxyController(): MvRxEpoxyController {
@@ -137,19 +153,43 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                   onBind { model, view, position ->
                       (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
                           drawee.iVShinyFront.setImageURI(it.imageUri)
+
                       }
+                  }
+
+                  it.types.forEach {
+
+                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) }
+
+                      typ1(typ?.key)
+                      color(typ?.colorType)
+
                   }
 
                   //On CLick Listener which load a new fragment
                   onClick { view : View ->
-                     view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonInfo)
-
-                      //2nd Paramater is paracable
-                       it.id?.let { it1 -> navigateTo(it1, null) }
-
+                      view.findNavController().navigate(
+                          R.id.action_pokemonMain_to_pokemonInfo,
+                          Bundle().apply { it.id?.let { it1 -> putInt(MvRx.KEY_ARG, it1) }  }
+                      )
                   }
+
+
+
+//
+//                  //Checking the types
+//                  if (it.types.size == 2) {
+//                      typ1(it.types.get(0)?.type?.name)
+//                      typ2(it.types.get(1)?.type?.name)
+//                  } else {
+//                      typ1(it.types.get(0)?.type?.name)
+//                      // Setting visisbilty false
+//                      typ2("")
+//                  }
+
               }
           }
         }
     }
 }
+

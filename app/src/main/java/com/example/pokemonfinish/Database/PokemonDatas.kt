@@ -28,6 +28,12 @@ open class PokemonDatas (
     @SerializedName("types")
     var types: RealmList<PokemonTypes> = RealmList(),
 
+    @SerializedName("moves")
+    var moves: RealmList<PokemonMoves> = RealmList(),
+
+    @SerializedName("stats")
+    var stats: RealmList<PokemonStats> = RealmList(),
+
     @SerializedName("sprites")
     var sprites: PokemonSprites? = null,
 

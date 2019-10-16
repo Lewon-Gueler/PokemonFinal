@@ -8,150 +8,107 @@
         <variable name="heigth" type="String" />
         <variable name="weigth" type="String" />
         <variable name="title" type="String" />
+
         <variable name="onClick" type="android.view.View.OnClickListener"/>
+
 
     </data>
 
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-
-                android:id="@+id/constraintLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="200dp"
-                android:background="@drawable/layout_bg"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/constraintLayout2"
+            android:layout_width="0dp"
+            android:layout_height="170dp"
+            android:layout_marginTop="235dp"
+            android:background="@drawable/layout_bg"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
-                <TextView
-                    android:id="@+id/textName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="36dp"
-                    android:gravity="center"
-                    android:text="@{title}"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="45dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/textH"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="Heigth:"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toStartOf="@+id/textHeigth"
-                    app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-                <TextView
-                    android:id="@+id/textHeigth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@{heigth}"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toStartOf="@+id/textWeigth"
-                    app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-                <TextView
-                    android:id="@+id/textW"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="140dp"
-                    android:text="@{weigth}"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-                <TextView
-                    android:id="@+id/textWeigth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="Weigth:"
-                    android:textColor="@color/colorWhite"
-                    app:layout_constraintEnd_toStartOf="@+id/textW"
-                    app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-                <Button
-                    android:id="@+id/btn1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="60dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="TEST"
-                    android:textColor="@color/colorWhite"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintEnd_toStartOf="@+id/btn2"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textH"
-                    android:onClick="@{onClick}"/>
-
-                <Button
-                    android:id="@+id/btn2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="TEST"
-                    android:textColor="@color/colorWhite"
-                    android:background="@android:color/transparent"
-                    app:layout_constraintEnd_toStartOf="@+id/btn3"
-                    app:layout_constraintStart_toEndOf="@+id/btn1"
-                    app:layout_constraintTop_toBottomOf="@+id/textH"
-                    android:onClick="@{onClick}"/>
-
-                <Button
-                    android:id="@+id/btn3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
-                    android:layout_marginEnd="60dp"
-                    android:textColor="@color/colorWhite"
-                    android:background="@android:color/transparent"
-                    android:text="TEST"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/btn2"
-                    app:layout_constraintTop_toBottomOf="@+id/textH"
-                    android:onClick="@{onClick}"/>
-
-                <TableLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                </TableLayout>
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <com.facebook.drawee.view.SimpleDraweeView
-                android:id="@+id/iVFullImage"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
+            <TextView
+                android:id="@+id/textName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:background="@drawable/ic_launcher_background"
+                android:gravity="center"
+                android:text="@{title}"
+                android:textColor="@color/colorWhite"
+                android:textSize="45dp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/textH"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Heigth:"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/textHeigth"
+                app:layout_constraintTop_toBottomOf="@+id/textName" />
+
+            <TextView
+                android:id="@+id/textHeigth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@{heigth}"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/textWeigth"
+                app:layout_constraintTop_toBottomOf="@+id/textName"
+                tools:text="200" />
+
+            <TextView
+                android:id="@+id/textW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="125dp"
+                android:text="@{weigth}"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textName"
+                tools:text="300" />
+
+            <TextView
+                android:id="@+id/textWeigth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Weigth:"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/textW"
+                app:layout_constraintTop_toBottomOf="@+id/textName" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/iVFullImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="64dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

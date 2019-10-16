@@ -10,6 +10,11 @@
         <variable name="index" type="String" />
         <variable name="onClick" type="android.view.View.OnClickListener"/>
 
+        <variable name="typ1" type="String" />
+        <variable name="typ2" type="String" />
+
+        <variable name="color" type="Integer" />
+
     </data>
 
     <androidx.cardview.widget.CardView
@@ -65,6 +70,34 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/typ1"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:gravity="center"
+                android:text="@{typ1}"
+                android:background="@{color}"
+                android:textColor="@color/colorWhite"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/typ2"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:gravity="center"
+                android:text="@{typ2}"
+                android:background="@{color}"
+                android:textColor="@color/colorWhite"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/typ1" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
