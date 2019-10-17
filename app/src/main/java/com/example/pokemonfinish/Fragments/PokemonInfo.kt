@@ -29,15 +29,14 @@ import com.example.pokemonfinish.*
 import com.example.pokemonfinish.databinding.*
 import kotlinx.android.synthetic.main.list_item_datas.*
 import com.google.android.material.tabs.TabLayout
-
-
+import kotlinx.android.synthetic.main.list_item_tabs.*
 
 
 /**
  * A simple [Fragment] subclass.
  */
 
-data class InfoState(val pokemon: PokemonDatas? = null): MvRxState
+data class InfoState(val pokemon: PokemonDatas? = null, val selectedTab:TabBarTyp? = TabBarTyp.STATS): MvRxState
 
 
 class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState) {
@@ -49,7 +48,29 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
         setState {
             copy(pokemon = pokemon)
         }
+
     }
+
+    fun onTab1() {
+        setState {
+            val one = TabBarTyp.STATS
+            copy(selectedTab=one)
+        }
+    }
+
+    fun onTab2() {
+        setState {
+            val two = TabBarTyp.EVOLUTIONS
+            copy(selectedTab = two)
+        }
+    }
+
+    fun onTab3() {
+     setState {
+         val three = TabBarTyp.MOVES
+         copy(selectedTab = three) }
+    }
+
 }
 
 
@@ -76,6 +97,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
     override fun epoxyController(): MvRxEpoxyController {
 
         return simpleController(viewModel) { state ->
+            state.pokemon
                 datas {
                     id(state.pokemon?.id)
                     title(state.pokemon?.name)
@@ -90,45 +112,61 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
             tabs {
                 id()
-//                onBind{model, view, position ->
-//                    (view.dataBinding as? ListItemTabsBinding)?.TabLayout?.setOnTabSelectedListener() Maybe??
-//                }
 
+                onBind{model, view, position ->
+                    (view.dataBinding as? ListItemTabsBinding)?.let {
 
-            }
+                        it.TabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                            override fun onTabReselected(p0: TabLayout.Tab?) {
 
+                            }
 
+                            override fun onTabUnselected(p0: TabLayout.Tab?) {
 
-            states {
-                id()
-                baseState("30")
-            }
+                            }
 
-            evolutions {
-                id()
-                onBind { model, view, position ->
-                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyFront?.setImageURI(state.pokemon?.sprites?.front_shiny)
-                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyBack?.setImageURI(state.pokemon?.sprites?.back_shiny)
-                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWFront?.setImageURI(state.pokemon?.sprites?.front_shiny_female)
-                    (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWBack?.setImageURI(state.pokemon?.sprites?.back_shiny_female)
+                            override fun onTabSelected(p0: TabLayout.Tab?) {
+                             val position = p0?.position
+                                when(position) {
+                                    0 -> viewModel.onTab1()
+                                    1 -> viewModel.onTab2()
+                                    2 -> viewModel.onTab3()
+                                }
+                            }
+
+                        })
+
+                    }
+
                 }
-
             }
 
-            state.pokemon?.moves?.forEach {
-                moves {
+
+
+            when(state.selectedTab) {
+                TabBarTyp.MOVES ->  state.pokemon?.moves?.forEach {
+                    moves {
+                        id()
+                        title(it.move?.name)
+                    }
+                }
+                TabBarTyp.STATS -> states {
                     id()
-                    title(it.move?.name)
+                    baseState("30") }
+
+                TabBarTyp.EVOLUTIONS ->     evolutions {
+                    id()
+                    onBind { model, view, position ->
+                        (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyFront?.setImageURI(state.pokemon?.sprites?.front_shiny)
+                        (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyBack?.setImageURI(state.pokemon?.sprites?.back_shiny)
+                        (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWFront?.setImageURI(state.pokemon?.sprites?.front_shiny_female)
+                        (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWBack?.setImageURI(state.pokemon?.sprites?.back_shiny_female)
+                    }
                 }
             }
 
-
-
-
-
-
-
+         }
 
         }
     }
-}
+
