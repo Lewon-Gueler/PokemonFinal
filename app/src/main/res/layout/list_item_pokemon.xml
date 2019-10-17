@@ -13,7 +13,7 @@
         <variable name="typ1" type="String" />
         <variable name="typ2" type="String" />
 
-        <variable name="color" type="Integer" />
+        <variable name="onColor" type="Integer" />
 
     </data>
 
@@ -79,7 +79,7 @@
                 android:layout_marginEnd="24dp"
                 android:gravity="center"
                 android:text="@{typ1}"
-                android:background="@{color}"
+                android:background="@{onColor}"
                 android:textColor="@color/colorWhite"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -93,7 +93,6 @@
                 android:layout_marginEnd="24dp"
                 android:gravity="center"
                 android:text="@{typ2}"
-                android:background="@{color}"
                 android:textColor="@color/colorWhite"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"

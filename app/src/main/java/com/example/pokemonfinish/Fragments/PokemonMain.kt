@@ -57,7 +57,7 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         val service = pokemonNetwork.service
 
         //First Server Request
-        service.getAllPokemonDatas(25,0).enqueue(object : Callback<PokemonList> {
+        service.getAllPokemonDatas(30,0).enqueue(object : Callback<PokemonList> {
             override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
             }
@@ -82,6 +82,8 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
                                 startRealm(allData)
 
                                 setOfState(allData)
+
+
                             }
                         })
                     }
@@ -155,14 +157,14 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                       (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
                           drawee.iVShinyFront.setImageURI(it.imageUri)
 
-                          drawee.typ1.setBackgroundColor(Color.BLUE)
-
+                         // ColorsTyp.FIRE.rgb()?.let { it1 -> drawee.typ1.setBackgroundColor(it1) } }
                       }
-                  }
 
+                  }
 //                  it.types.forEach {
 //
-//                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) }
+//                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase())
+
 //
 //                      typ1(typ?.key)
 //                      color(typ?.colorType)
@@ -179,8 +181,14 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                   //Checking the types
                   if (it.types.size == 2) {
-                      typ1(it.types.get(0)?.type?.name)
-                      typ2(it.types.get(1)?.type?.name)
+                      val firstN = it.types.get(0)?.type?.name
+                      typ1(firstN)
+
+//                      val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) } onColor(firstC?.rgb())
+
+                      val secondN = it.types.get(1)?.type?.name
+                      typ2(secondN)
+
                   } else {
                       typ1(it.types.get(0)?.type?.name)
                       // Setting visisbilty false

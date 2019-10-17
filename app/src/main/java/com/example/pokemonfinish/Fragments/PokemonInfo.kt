@@ -71,6 +71,12 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
          copy(selectedTab = three) }
     }
 
+    fun onTab4() {
+        setState {
+            val four = TabBarTyp.EVOCHAIN
+            copy(selectedTab = four) }
+    }
+
 }
 
 
@@ -131,6 +137,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                                     0 -> viewModel.onTab1()
                                     1 -> viewModel.onTab2()
                                     2 -> viewModel.onTab3()
+                                    3 -> viewModel.onTab4()
                                 }
                             }
 
@@ -150,9 +157,15 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         title(it.move?.name)
                     }
                 }
-                TabBarTyp.STATS -> states {
-                    id()
-                    baseState("30") }
+                TabBarTyp.STATS ->
+                    state.pokemon?.stats?.forEach {
+                        states {
+                            id()
+                            baseState(it.baseStat.toString())
+                            stateName(it.stat?.name)
+                        }
+                    }
+
 
                 TabBarTyp.EVOLUTIONS ->     evolutions {
                     id()
@@ -163,6 +176,11 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyWBack?.setImageURI(state.pokemon?.sprites?.back_shiny_female)
                     }
                 }
+
+                TabBarTyp.EVOCHAIN -> evochain {
+                    id()
+                }
+
             }
 
          }

@@ -5,7 +5,11 @@ import io.realm.RealmObject
 
 open class PokemonStats (
 
-    @SerializedName("stats")
-    var stats: PokemonStat? = null
+    @SerializedName("base_stat")
+    var baseStat: Int? = null,
+
+    @SerializedName("stat")
+    var stat: PokemonStat? = null
+
 
 ) : RealmObject()
