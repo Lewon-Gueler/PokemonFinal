@@ -16,6 +16,8 @@ import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.fragmentViewModel
 import com.example.pokemonfinish.ColorsTyp
 import com.example.pokemonfinish.Database.PokemonDatas
+import com.example.pokemonfinish.Database.PokemonEvoChain
+import com.example.pokemonfinish.Database.PokemonEvoSpecies
 import com.example.pokemonfinish.Database.PokemonList
 import com.example.pokemonfinish.Networking.Api
 import com.example.pokemonfinish.Networking.DownloadPokemon
@@ -78,11 +80,31 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
                             override fun onResponse(call: Call<PokemonDatas>, response: Response<PokemonDatas>) {
 
                                 val allData = response.body()
+                                val newId = allData?.id
 
-                                startRealm(allData)
 
-                                setOfState(allData)
+                                //third Server Request:
+                                newId.let { it1 ->
+                                    service.getEvos(it1!!).enqueue(object: Callback<PokemonEvoChain> {
+                                        override fun onFailure(call: Call<PokemonEvoChain>, t: Throwable) {
 
+                                        }
+
+                                        override fun onResponse(call: Call<PokemonEvoChain>, response: Response<PokemonEvoChain>) {
+
+                                            val newData = response.body()
+
+                                            allData?.let { it2 -> newData?.let { it3 ->
+                                                startRealm(it2,
+                                                    it3
+                                                )
+                                            } }
+
+                                            setOfState(allData)
+                                        }
+
+                                    })
+                                }
 
                             }
                         })
@@ -112,10 +134,12 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         }
     }
 
-    fun startRealm(allData: PokemonDatas?) {
+
+    fun startRealm(allData: PokemonDatas, newData: PokemonEvoChain) {
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(allData)
-        Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
+        realm.copyToRealmOrUpdate(newData)
+        //Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
         //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
         realm.commitTransaction()
     }

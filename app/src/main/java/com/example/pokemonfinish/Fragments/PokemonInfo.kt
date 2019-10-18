@@ -26,6 +26,7 @@ import android.R.attr.key
 import androidx.navigation.findNavController
 import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
+import com.example.pokemonfinish.Database.PokemonEvoChain
 import com.example.pokemonfinish.databinding.*
 import kotlinx.android.synthetic.main.list_item_datas.*
 import com.google.android.material.tabs.TabLayout
@@ -36,7 +37,7 @@ import kotlinx.android.synthetic.main.list_item_tabs.*
  * A simple [Fragment] subclass.
  */
 
-data class InfoState(val pokemon: PokemonDatas? = null, val selectedTab:TabBarTyp? = TabBarTyp.STATS): MvRxState
+data class InfoState(val pokemon: PokemonDatas? = null, val selectedTab:TabBarTyp? = TabBarTyp.STATS, val evoChain: PokemonEvoChain? = null): MvRxState
 
 
 class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState) {
@@ -44,9 +45,14 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
     fun getRealmData(pokeId: Int) {
         val realm = Realm.getDefaultInstance()
         val pokemon = realm.where(PokemonDatas::class.java).equalTo("id", pokeId).findFirst()?.toUnmanaged()
+        val evoChain = realm.where(PokemonEvoChain::class.java).equalTo("id",pokeId).findFirst()?.toUnmanaged()
 
         setState {
             copy(pokemon = pokemon)
+        }
+
+        setState {
+            copy(evoChain = evoChain)
         }
 
     }
@@ -140,9 +146,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                                     3 -> viewModel.onTab4()
                                 }
                             }
-
                         })
-
                     }
 
                 }
@@ -167,7 +171,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     }
 
 
-                TabBarTyp.EVOLUTIONS ->     evolutions {
+                TabBarTyp.EVOLUTIONS -> evolutions {
                     id()
                     onBind { model, view, position ->
                         (view.dataBinding as? ListItemEvolutionsBinding)?.iVShinyFront?.setImageURI(state.pokemon?.sprites?.front_shiny)
@@ -177,10 +181,10 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     }
                 }
 
-                TabBarTyp.EVOCHAIN -> evochain {
-                    id()
-                }
-
+                TabBarTyp.EVOCHAIN ->
+                        evochain {
+                            id()
+                    }
             }
 
          }

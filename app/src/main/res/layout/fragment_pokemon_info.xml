@@ -11,7 +11,7 @@
     </data>
 
         <com.airbnb.epoxy.EpoxyRecyclerView
-            android:background="@color/colorRed"
+            android:background="@color/colorDarkTheme"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recyclerView2"/>
