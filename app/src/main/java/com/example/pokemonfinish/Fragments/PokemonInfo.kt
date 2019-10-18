@@ -143,7 +143,6 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         typ2("")
                     }
 
-
                     onBind { model, view, position ->
                         (view.dataBinding as? ListItemDatasBinding)?.iVFullImage?.setImageURI(state.pokemon?.imageUri)
                     }

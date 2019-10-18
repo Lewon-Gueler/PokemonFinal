@@ -3,11 +3,14 @@ package com.example.pokemonfinish.Fragments
 
 
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.TextView
+import androidx.databinding.BindingAdapter
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyRecyclerView
@@ -33,6 +36,7 @@ import de.ffuf.android.architecture.ui.base.binding.fragments.EpoxyFragment
 import io.realm.Realm
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.list_item_pokemon.*
+import kotlinx.coroutines.handleCoroutineException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -204,6 +208,8 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                   }
 
+                  colorHexString(ColorsTyp.dragon.color)
+
                   //Types Checking and Color Setting:
 
                   if (it.types.size == 2) {
@@ -212,6 +218,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                       val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
                       onColor(Color.parseColor(firstC?.color))
+                      //colorHexString(firstC?.color) Im XML schauen wieso es bei types nicht geht aber bei Name
 
                       val secondN = it.types.get(1)?.type?.name
                       typ2(secondN)
@@ -245,3 +252,15 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     }
 }
 
+
+@BindingAdapter("tagColor")
+fun setTagColor(txtView:TextView, colorHexString: String) {
+    colorHexString.let {
+
+        val background = txtView.background
+        if (background is GradientDrawable) {
+            background.setColor(Color.parseColor(colorHexString))
+        }
+
+    }
+}
