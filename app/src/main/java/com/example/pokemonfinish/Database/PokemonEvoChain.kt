@@ -13,6 +13,6 @@ open class PokemonEvoChain: RealmObject() {
     @SerializedName("id")
     var id: Int? = 1
 
-    @SerializedName("chain")
+    @SerializedName("pokemon_species")
     var chain: RealmList<PokemonEvoSpecies> = RealmList()
 }

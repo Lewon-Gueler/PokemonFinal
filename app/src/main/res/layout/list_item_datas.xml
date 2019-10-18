@@ -9,6 +9,12 @@
         <variable name="weigth" type="String" />
         <variable name="title" type="String" />
 
+        <variable name="typ1" type="String" />
+        <variable name="typ2" type="String" />
+
+        <variable name="onColorTyp" type="Integer" />
+        <variable name="onColorTypTwo" type="Integer" />
+
         <variable name="onClick" type="android.view.View.OnClickListener"/>
 
 
@@ -68,7 +74,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/textWeigth"
                 app:layout_constraintTop_toBottomOf="@+id/textName"
-                tools:text="200" />
+                tools:text="6" />
 
             <TextView
                 android:id="@+id/textW"
@@ -81,7 +87,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textName"
-                tools:text="300" />
+                tools:text="5" />
 
             <TextView
                 android:id="@+id/textWeigth"
@@ -94,6 +100,42 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/textW"
                 app:layout_constraintTop_toBottomOf="@+id/textName" />
+
+            <TextView
+                android:id="@+id/typMain1"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@{onColorTyp}"
+                android:gravity="center"
+                android:text="@{typ1}"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/typMain2"
+                app:layout_constraintTop_toBottomOf="@+id/textWeigth"
+                tools:text="poison" />
+
+            <TextView
+                android:id="@+id/typMain2"
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="143dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@{onColorTypTwo}"
+                android:gravity="center"
+                android:text="@{typ2}"
+                android:textColor="@color/colorWhite"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textH"
+                tools:text="grass" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,13 +13,16 @@
         <action
             android:id="@+id/action_pokemonMain_to_pokemonInfo"
             app:destination="@id/pokemonInfo"
-            app:popUpTo="@+id/pokemonMain"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/pokemonInfo"
         android:name="com.example.pokemonfinish.Fragments.PokemonInfo"
         android:label="fragment_pokemon_info"
-        tools:layout="@layout/fragment_pokemon_info" />
+        tools:layout="@layout/fragment_pokemon_info" >
+        <action
+            android:id="@+id/action_pokemonInfo_to_pokemonMain"
+            app:destination="@id/pokemonMain" />
+    </fragment>
 
 </navigation>

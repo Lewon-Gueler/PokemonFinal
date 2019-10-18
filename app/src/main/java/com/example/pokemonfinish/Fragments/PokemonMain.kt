@@ -59,7 +59,7 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         val service = pokemonNetwork.service
 
         //First Server Request
-        service.getAllPokemonDatas(30,0).enqueue(object : Callback<PokemonList> {
+        service.getAllPokemonDatas(50,0).enqueue(object : Callback<PokemonList> {
             override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
             }
@@ -81,6 +81,7 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
 
                                 val allData = response.body()
                                 val newId = allData?.id
+
 
 
                                 //third Server Request:
@@ -135,13 +136,27 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
     }
 
 
-    fun startRealm(allData: PokemonDatas, newData: PokemonEvoChain) {
+    fun startRealm(allData: PokemonDatas, newData: PokemonEvoChain) { //, newData: PokemonEvoChain  realm.copyToRealmOrUpdate(newData)
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(allData)
         realm.copyToRealmOrUpdate(newData)
         //Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
         //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
         realm.commitTransaction()
+    }
+
+    fun realmCheck() {
+        val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
+        val dbp = realm.copyFromRealm(db)
+
+        if (db.isEmpty()) {
+          getNetworkStuff()
+        } else {
+            setState {
+                copy(pokeList = dbp)
+
+            }
+        }
     }
 
 }
@@ -160,7 +175,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getNetworkStuff()
+        viewModel.realmCheck()
 
         setHasOptionsMenu(true)
 
@@ -180,20 +195,41 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                   onBind { model, view, position ->
                       (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
                           drawee.iVShinyFront.setImageURI(it.imageUri)
+//                          val blue = "#3289a8"
+//                          val pls = Color.parseColor(blue)
+//                          drawee.typ1.setBackgroundColor(pls)
 
-                         // ColorsTyp.FIRE.rgb()?.let { it1 -> drawee.typ1.setBackgroundColor(it1) } }
+
                       }
 
                   }
-//                  it.types.forEach {
-//
-//                      val typ = it.type?.name?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase())
 
-//
-//                      typ1(typ?.key)
-//                      color(typ?.colorType)
-//
-//                  }
+                  //Types Checking and Color Setting:
+
+                  if (it.types.size == 2) {
+                      val firstN = it.types.get(0)?.type?.name
+                      typ1(firstN)
+
+                      val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
+                      onColor(Color.parseColor(firstC?.color))
+
+                      val secondN = it.types.get(1)?.type?.name
+                      typ2(secondN)
+
+                      val secondC = secondN?.let { it1 -> ColorsTyp.valueOf(it1) }
+                      onColorTwo(Color.parseColor(secondC?.color))
+
+                  } else {
+                      val oneTyp = it.types.get(0)?.type?.name
+                      typ1(oneTyp)
+
+                      val oneTypC = oneTyp?.let {ColorsTyp.valueOf(it) }
+                      onColor(Color.parseColor(oneTypC?.color))
+
+                      // Setting visisbilty false
+                      typ2("")
+                  }
+
 
                   //On CLick Listener which load a new fragment
                   onClick { view : View ->
@@ -201,22 +237,6 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                           R.id.action_pokemonMain_to_pokemonInfo,
                           Bundle().apply { it.id?.let { it1 -> putInt(MvRx.KEY_ARG, it1) }  }
                       )
-                  }
-
-                  //Checking the types
-                  if (it.types.size == 2) {
-                      val firstN = it.types.get(0)?.type?.name
-                      typ1(firstN)
-
-//                      val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1.toUpperCase()) } onColor(firstC?.rgb())
-
-                      val secondN = it.types.get(1)?.type?.name
-                      typ2(secondN)
-
-                  } else {
-                      typ1(it.types.get(0)?.type?.name)
-                      // Setting visisbilty false
-                      typ2("")
                   }
 
               }

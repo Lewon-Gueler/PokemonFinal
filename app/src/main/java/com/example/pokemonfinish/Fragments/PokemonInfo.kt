@@ -23,6 +23,8 @@ import de.ffuf.android.architecture.ui.base.binding.fragments.MvrxFragment
 import io.realm.Realm
 import android.R.attr.defaultValue
 import android.R.attr.key
+import android.graphics.Color
+import android.util.Log
 import androidx.navigation.findNavController
 import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
@@ -116,6 +118,32 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     heigth(state.pokemon?.height.toString())
                     weigth(state.pokemon?.weight.toString())
 
+                    //Checking the types
+                    if (state.pokemon?.types?.size == 2) {
+                        val firstN = state.pokemon.types.get(0)?.type?.name
+                        typ1(firstN)
+
+                        val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
+                        onColorTyp(Color.parseColor(firstC?.color))
+
+                        val secondN = state.pokemon.types.get(1)?.type?.name
+                        typ2(secondN)
+
+                        val secondC = secondN?.let { it1 -> ColorsTyp.valueOf(it1) }
+                        onColorTypTwo(Color.parseColor(secondC?.color))
+
+                    } else {
+                        val oneTyp = state.pokemon?.types?.get(0)?.type?.name
+                        typ1(oneTyp)
+
+                        val oneTypC = oneTyp?.let {ColorsTyp.valueOf(it) }
+                        onColorTyp(Color.parseColor(oneTypC?.color))
+
+                        // Setting visisbilty false
+                        typ2("")
+                    }
+
+
                     onBind { model, view, position ->
                         (view.dataBinding as? ListItemDatasBinding)?.iVFullImage?.setImageURI(state.pokemon?.imageUri)
                     }
@@ -182,8 +210,8 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 }
 
                 TabBarTyp.EVOCHAIN ->
-                        evochain {
-                            id()
+                evochain {
+                                id()
                     }
             }
 

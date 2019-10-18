@@ -14,6 +14,7 @@
         <variable name="typ2" type="String" />
 
         <variable name="onColor" type="Integer" />
+        <variable name="onColorTwo" type="Integer" />
 
     </data>
 
@@ -75,28 +76,29 @@
                 android:id="@+id/typ1"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
+                android:background="@{onColor}"
                 android:gravity="center"
                 android:text="@{typ1}"
-                android:background="@{onColor}"
                 android:textColor="@color/colorWhite"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/typ2" />
 
             <TextView
                 android:id="@+id/typ2"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
+                android:background="@{onColorTwo}"
                 android:gravity="center"
                 android:text="@{typ2}"
                 android:textColor="@color/colorWhite"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/typ1" />
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
