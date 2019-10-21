@@ -22,6 +22,6 @@ interface Api {
     fun getChain(@Path("id")id:Int): Call<PokemonSpecies>
 
     @GET
-    fun getEvos(@Url url: String): Call<PokemonEvoChain>
+    fun getEvos(@Url evourl: String): Call<PokemonEvoChain>
 
 }

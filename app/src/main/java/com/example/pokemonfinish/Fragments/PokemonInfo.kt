@@ -227,13 +227,14 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 }
 
                 TabBarTyp.EVOCHAIN ->
-                evochain {
-                       id()
-                }
+                    evochain {
+                            id()
 
+                        }
+                    }
             }
-         }
-
         }
+
     }
+
 
