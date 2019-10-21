@@ -17,6 +17,7 @@
         <variable name="onColorTwo" type="Integer" />
 
         <variable name="colorHexString" type="String" />
+        <variable name="colorHexString2" type="String" />
 
     </data>
 
@@ -35,7 +36,6 @@
             android:layout_height="match_parent">
 
             <TextView
-                tagColor="@{colorHexString}"
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -44,7 +44,6 @@
                 android:gravity="center"
                 android:text="@{title}"
                 android:textColor="@color/colorWhite"
-                android:background="@drawable/ic_round"
                 android:textSize="25dp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/iVShinyFront"
@@ -77,12 +76,13 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
+                tagColor="@{colorHexString2}"
                 android:id="@+id/typ1"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
-                android:background="@{onColor}"
+               android:background="@drawable/ic_round"
                 android:gravity="center"
                 android:text="@{typ1}"
                 android:textColor="@color/colorWhite"
@@ -91,12 +91,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/typ2" />
 
             <TextView
+                tagColor="@{colorHexString}"
                 android:id="@+id/typ2"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="24dp"
-                android:background="@{onColorTwo}"
+                android:background="@drawable/ic_round"
                 android:gravity="center"
                 android:text="@{typ2}"
                 android:textColor="@color/colorWhite"

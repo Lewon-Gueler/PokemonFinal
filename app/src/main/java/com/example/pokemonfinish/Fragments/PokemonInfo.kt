@@ -25,6 +25,7 @@ import android.R.attr.defaultValue
 import android.R.attr.key
 import android.graphics.Color
 import android.util.Log
+import android.widget.ProgressBar
 import androidx.navigation.findNavController
 import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
@@ -59,31 +60,48 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
 
     }
 
-    fun onTab1() {
+    fun onTab(index:Int?){
         setState {
-            val one = TabBarTyp.STATS
-            copy(selectedTab=one)
+            when(index) {
+                0 ->  copy(selectedTab = TabBarTyp.STATS)
+                1 ->  copy(selectedTab = TabBarTyp.EVOLUTIONS)
+                2 ->  copy(selectedTab = TabBarTyp.MOVES)
+                3 ->  copy(selectedTab = TabBarTyp.EVOCHAIN)
+
+                else -> copy(selectedTab = TabBarTyp.STATS)
+            }
         }
     }
 
-    fun onTab2() {
-        setState {
-            val two = TabBarTyp.EVOLUTIONS
-            copy(selectedTab = two)
-        }
+    fun progressAnimaton(ani:StatesBindingModelBuilder) {
+
+        val progressBar: ProgressBar
+        var progressStatus: Int = 0
+        val handler = Handler()
+
+
+        Thread(Runnable {
+            while (progressStatus < 100)
+                progressStatus += 1
+
+            try {
+                Thread.sleep(200)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+
+            handler.post(Runnable{
+
+
+        })
+
+        }).start()
+
     }
 
-    fun onTab3() {
-     setState {
-         val three = TabBarTyp.MOVES
-         copy(selectedTab = three) }
-    }
 
-    fun onTab4() {
-        setState {
-            val four = TabBarTyp.EVOCHAIN
-            copy(selectedTab = four) }
-    }
+
+
 
 }
 
@@ -100,6 +118,8 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //viewModel.progressAnimaton()
 
        val PokeID = arguments?.getInt(MvRx.KEY_ARG)
         PokeID?.let { viewModel.getRealmData(it) }
@@ -118,30 +138,32 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     heigth(state.pokemon?.height.toString())
                     weigth(state.pokemon?.weight.toString())
 
-                    //Checking the types
+                    //Checking the types NEED TO REFECTOR!!
                     if (state.pokemon?.types?.size == 2) {
                         val firstN = state.pokemon.types.get(0)?.type?.name
                         typ1(firstN)
 
                         val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
-                        onColorTyp(Color.parseColor(firstC?.color))
+                       // onColorTyp(Color.parseColor(firstC?.color))
 
                         val secondN = state.pokemon.types.get(1)?.type?.name
                         typ2(secondN)
 
                         val secondC = secondN?.let { it1 -> ColorsTyp.valueOf(it1) }
-                        onColorTypTwo(Color.parseColor(secondC?.color))
+                        //onColorTypTwo(Color.parseColor(secondC?.color))
 
                     } else {
                         val oneTyp = state.pokemon?.types?.get(0)?.type?.name
                         typ1(oneTyp)
 
                         val oneTypC = oneTyp?.let {ColorsTyp.valueOf(it) }
-                        onColorTyp(Color.parseColor(oneTypC?.color))
+                        //onColorTyp(Color.parseColor(oneTypC?.color))
 
                         // Setting visisbilty false
                         typ2("")
                     }
+
+
 
                     onBind { model, view, position ->
                         (view.dataBinding as? ListItemDatasBinding)?.iVFullImage?.setImageURI(state.pokemon?.imageUri)
@@ -151,7 +173,6 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
             tabs {
                 id()
-
                 onBind{model, view, position ->
                     (view.dataBinding as? ListItemTabsBinding)?.let {
 
@@ -166,12 +187,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                             override fun onTabSelected(p0: TabLayout.Tab?) {
                              val position = p0?.position
-                                when(position) {
-                                    0 -> viewModel.onTab1()
-                                    1 -> viewModel.onTab2()
-                                    2 -> viewModel.onTab3()
-                                    3 -> viewModel.onTab4()
-                                }
+                                viewModel.onTab(position)
                             }
                         })
                     }
@@ -180,20 +196,22 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
             }
 
 
-
             when(state.selectedTab) {
-                TabBarTyp.MOVES ->  state.pokemon?.moves?.forEach {
+                TabBarTyp.MOVES -> state.pokemon?.moves?.forEach {
                     moves {
                         id()
                         title(it.move?.name)
                     }
                 }
+
                 TabBarTyp.STATS ->
                     state.pokemon?.stats?.forEach {
                         states {
                             id()
                             baseState(it.baseStat.toString())
                             stateName(it.stat?.name)
+                            pokeProgress(it.baseStat)
+
                         }
                     }
 
@@ -210,10 +228,10 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                 TabBarTyp.EVOCHAIN ->
                 evochain {
-                                id()
-                    }
-            }
+                       id()
+                }
 
+            }
          }
 
         }

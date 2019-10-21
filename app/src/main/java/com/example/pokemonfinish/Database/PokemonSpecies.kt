@@ -7,12 +7,13 @@ import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
 @RealmClass
-open class PokemonEvoChain: RealmObject() {
+open class PokemonSpecies: RealmObject() {
 
     @PrimaryKey
     @SerializedName("id")
     var id: Int? = 1
 
-    @SerializedName("chain")
-    var chain: RealmList<PokemonEvoSpecies> = RealmList()
+    @SerializedName("evolution_chain")
+    var evoChainURL: RealmList<PokemonUrlChain > = RealmList()
+
 }

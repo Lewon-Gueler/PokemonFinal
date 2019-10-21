@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.BindingAdapter
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -18,10 +19,7 @@ import com.airbnb.mvrx.MvRx
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.fragmentViewModel
 import com.example.pokemonfinish.ColorsTyp
-import com.example.pokemonfinish.Database.PokemonDatas
-import com.example.pokemonfinish.Database.PokemonEvoChain
-import com.example.pokemonfinish.Database.PokemonEvoSpecies
-import com.example.pokemonfinish.Database.PokemonList
+import com.example.pokemonfinish.Database.*
 import com.example.pokemonfinish.Networking.Api
 import com.example.pokemonfinish.Networking.DownloadPokemon
 import com.example.pokemonfinish.R
@@ -40,10 +38,8 @@ import kotlinx.coroutines.handleCoroutineException
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
-
-
-
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 /**
@@ -57,9 +53,10 @@ data class PokemonState(val pokeList: List<PokemonDatas> = emptyList()): MvRxSta
 class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(initialState) {
 
     val realm = Realm.getDefaultInstance()
+    val pokemonNetwork:DownloadPokemon = DownloadPokemon()
 
     fun getNetworkStuff() {
-        val pokemonNetwork:DownloadPokemon = DownloadPokemon()
+
         val service = pokemonNetwork.service
 
         //First Server Request
@@ -75,6 +72,7 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
 
                     val newURL = pokemon.url
 
+
                     //Second Server Request
                     newURL?.let {
                         service.getPokeURL(newURL).enqueue(object: Callback<PokemonDatas> {
@@ -86,29 +84,40 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
                                 val allData = response.body()
                                 val newId = allData?.id
 
+                                setOfState(allData)
+                                allData?.let { it1 -> startRealm(it1) }
 
 
                                 //third Server Request:
-                                newId.let { it1 ->
-                                    service.getEvos(it1!!).enqueue(object: Callback<PokemonEvoChain> {
-                                        override fun onFailure(call: Call<PokemonEvoChain>, t: Throwable) {
+                                newId?.let { it1 -> service.getChain(it1).enqueue(object: Callback<PokemonSpecies> {
+                                    override fun onFailure(call: Call<PokemonSpecies>, t: Throwable) {
+
+                                    }
+
+                                    override fun onResponse(call: Call<PokemonSpecies>, response: Response<PokemonSpecies>) {
+                                        response.body()?.evoChainURL?.forEach {chainlist ->
+                                            val chainURL = chainlist.urlChain
+
+                                            //fourth Server Request
+                                            chainURL?.let { it2 -> service.getEvos(it2).enqueue(object: Callback<PokemonEvoChain>{
+                                                override fun onFailure(call: Call<PokemonEvoChain>, t: Throwable) {
+
+                                                }
+
+                                                override fun onResponse(call: Call<PokemonEvoChain>, response: Response<PokemonEvoChain>) {
+                                                  val body = response.body()
+
+                                                }
+
+                                            }) }
+
+
+
 
                                         }
+                                    }
 
-                                        override fun onResponse(call: Call<PokemonEvoChain>, response: Response<PokemonEvoChain>) {
-
-                                            val newData = response.body()
-
-                                            allData?.let { it2 -> newData?.let { it3 ->
-                                                startRealm(it2,
-                                                    it3
-                                                )
-                                            } }
-
-                                            setOfState(allData)
-                                        }
-
-                                    })
+                                })
                                 }
 
                             }
@@ -119,6 +128,57 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
         })
     }
 
+
+
+//   suspend fun firstServerRequest(): String? = suspendCoroutine { cont ->
+//
+//           val service = pokemonNetwork.service
+//
+//           service.getAllPokemonDatas(50, 0).enqueue(object : Callback<PokemonList> {
+//               override fun onFailure(call: Call<PokemonList>, t: Throwable) {
+//
+//               }
+//
+//               override fun onResponse(call: Call<PokemonList>, response: Response<PokemonList>) {
+//                   response.body()?.results?.forEach { pokemon ->
+//
+//                       val newURL = pokemon.url
+//                       cont.resume(newURL)
+//
+//
+//                   }
+//
+//               }
+//           })
+//       }
+
+
+//
+//    fun secondServerRequest(newURL:String):Int {
+//
+//        val service = pokemonNetwork.service
+//
+//        //Second Server Request
+//        newURL?.let {
+//            service.getPokeURL(newURL).enqueue(object: Callback<PokemonDatas> {
+//                override fun onFailure(call: Call<PokemonDatas>, t: Throwable) {
+//                }
+//
+//                override fun onResponse(
+//                    call: Call<PokemonDatas>,
+//                    response: Response<PokemonDatas>) {
+//
+//                    val allData = response.body()
+//                    val newId = allData?.id
+//
+//                    setOfState(allData)
+//                    allData?.let { it1 -> startRealm(it1) }
+//                }
+//            })
+//        }
+//        return newId
+//    }
+//
 
     override fun onCleared() {
         super.onCleared()
@@ -140,14 +200,14 @@ class PokemonModel(initialState: PokemonState): MvRxViewModel<PokemonState>(init
     }
 
 
-    fun startRealm(allData: PokemonDatas, newData: PokemonEvoChain) { //, newData: PokemonEvoChain  realm.copyToRealmOrUpdate(newData)
+    fun startRealm(allData: PokemonDatas) { //, newData: PokemonEvoChain  realm.copyToRealmOrUpdate(newData)
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(allData)
-        realm.copyToRealmOrUpdate(newData)
         //Log.d("current Pokemon", "${allData?.id} ${allData?.types?.get(0)?.type?.name}")
         //val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
         realm.commitTransaction()
     }
+
 
     fun realmCheck() {
         val db = realm.where(PokemonDatas::class.java).sort("id").findAll()
@@ -179,6 +239,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         viewModel.realmCheck()
 
         setHasOptionsMenu(true)
@@ -199,42 +260,44 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                   onBind { model, view, position ->
                       (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
                           drawee.iVShinyFront.setImageURI(it.imageUri)
-//                          val blue = "#3289a8"
-//                          val pls = Color.parseColor(blue)
-//                          drawee.typ1.setBackgroundColor(pls)
-
 
                       }
-
                   }
 
-                  colorHexString(ColorsTyp.dragon.color)
 
-                  //Types Checking and Color Setting:
+                  //Types Checking and Color Setting: NEED To Refector
+//                  val listSize = it.types.size
+//                  val firstName = it.types.get(0)?.type?.name
+//                  val secondName = it.types.get(1)?.type?.name
 
                   if (it.types.size == 2) {
                       val firstN = it.types.get(0)?.type?.name
                       typ1(firstN)
 
                       val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
-                      onColor(Color.parseColor(firstC?.color))
-                      //colorHexString(firstC?.color) Im XML schauen wieso es bei types nicht geht aber bei Name
+                      colorHexString2(firstC?.color)
 
                       val secondN = it.types.get(1)?.type?.name
                       typ2(secondN)
 
                       val secondC = secondN?.let { it1 -> ColorsTyp.valueOf(it1) }
-                      onColorTwo(Color.parseColor(secondC?.color))
+                      colorHexString(secondC?.color)
+
 
                   } else {
                       val oneTyp = it.types.get(0)?.type?.name
-                      typ1(oneTyp)
 
-                      val oneTypC = oneTyp?.let {ColorsTyp.valueOf(it) }
-                      onColor(Color.parseColor(oneTypC?.color))
+                      if (oneTyp != null) {
+                          typ1(oneTyp)
 
-                      // Setting visisbilty false
-                      typ2("")
+                          val oneTypC = oneTyp.let {ColorsTyp.valueOf(it) }
+                          colorHexString2(oneTypC.color)
+
+                      } else {
+                          // Setting visisbilty false
+                          typ2("")
+                      }
+
                   }
 
 
@@ -253,14 +316,15 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 }
 
 
-@BindingAdapter("tagColor")
-fun setTagColor(txtView:TextView, colorHexString: String) {
-    colorHexString.let {
 
-        val background = txtView.background
+@BindingAdapter("tagColor")
+fun setTagColor(txtView:TextView, colorHexString: String?) {
+    val background = txtView.background
+    colorHexString?.let {
+
+
         if (background is GradientDrawable) {
             background.setColor(Color.parseColor(colorHexString))
         }
-
     }
 }
