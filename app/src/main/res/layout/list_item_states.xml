@@ -7,6 +7,8 @@
         <variable name="baseState" type="String" />
         <variable name="stateName" type="String" />
         <variable name="pokeProgress" type="Integer" />
+
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -43,19 +45,21 @@
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
-            android:progressDrawable="@drawable/greenprogress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:indeterminate="false"
             android:max="150"
             android:minWidth="200dp"
             android:progress="@{pokeProgress}"
+            android:progressDrawable="@drawable/greenprogress"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/txtHp"
             app:layout_constraintTop_toTopOf="parent" />
 

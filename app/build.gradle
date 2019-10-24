@@ -64,9 +64,12 @@ dependencies {
 
     kapt "com.airbnb.android:epoxy-processor:3.7.0"
 
+
     api("de.ffuf.android.architecture.realm:ffuf-architecture-realm:2.0.121@aar") {
         transitive = true
     }
+
+
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.12'

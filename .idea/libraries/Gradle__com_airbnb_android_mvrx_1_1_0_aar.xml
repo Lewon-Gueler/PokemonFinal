@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.airbnb.android:mvrx:1.1.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1445a4ffa2ddf6daa9526bfaec0caf77/mvrx-1.1.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1445a4ffa2ddf6daa9526bfaec0caf77/mvrx-1.1.0/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.airbnb.android/mvrx/1.1.0/e87d7fc9c8b867776c0e6d10d98160976b4775fa/mvrx-1.1.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.airbnb.android/mvrx/1.1.0/f3a7b58d161928369a08612e7ff8f3dc6ad536fd/mvrx-1.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -7,12 +7,18 @@ import io.realm.annotations.PrimaryKey
 import io.realm.annotations.RealmClass
 
 @RealmClass
-open class PokemonEvoChain: RealmObject() {
+open class PokemonEvoChain (
 
     @PrimaryKey
     @SerializedName("id")
-    var id: Int? = 1
+    var id: Int? = 1,
 
     @SerializedName("chain")
-    var chain: RealmList<PokemonEvoSpecies> = RealmList()
+    var chain: PokemonEvoSpecies? = null
+
+) : RealmObject() {
+
+    val imageUri: String
+        get() = "https://pokeres.bastionbot.org/images/pokemon/$id.png"
 }
+

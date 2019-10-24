@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: de.ffuf.android.architecture.realm:ffuf-architecture-realm:2.0.121@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/84a3ec942f9fb8e46a33e69aa79a699b/ffuf-architecture-realm-2.0.121/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/84a3ec942f9fb8e46a33e69aa79a699b/ffuf-architecture-realm-2.0.121/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/de.ffuf.android.architecture.realm/ffuf-architecture-realm/2.0.121/6f79b48574f6817903a9b598209e941f3ed31819/ffuf-architecture-realm-2.0.121-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

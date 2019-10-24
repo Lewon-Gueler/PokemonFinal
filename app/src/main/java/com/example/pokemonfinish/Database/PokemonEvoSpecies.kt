@@ -4,7 +4,12 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 
-open class PokemonEvoSpecies : RealmObject() {
-    @SerializedName("evoles_to")
-    var evoles: RealmList<PokemonEvoTo> = RealmList()
-}
+open class PokemonEvoSpecies  (
+    @SerializedName("evolves_to")
+    var evoles: RealmList<PokemonEvoTo> = RealmList(),
+
+    @SerializedName("species")
+    var species: PokemonEvoSpecies2? = null
+
+) : RealmObject()
+
