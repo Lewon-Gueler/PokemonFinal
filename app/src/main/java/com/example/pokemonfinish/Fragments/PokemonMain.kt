@@ -37,7 +37,7 @@ import retrofit2.Response
  */
 //Data Class Later Database
 
-data class PokemonState(val pokeList: List<PokemonDatas> = emptyList()) : MvRxState
+data class PokemonState(val pokeList: List<PokemonDatas> = emptyList(), val evoList: List<PokemonEvoChain> = emptyList()) : MvRxState
 
 
 class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(initialState) {
@@ -52,7 +52,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
    fun firstRequest() {
 
-           service.getAllPokemonDatas(20, 0).enqueue(object : Callback<PokemonList> {
+           service.getAllPokemonDatas(9, 0).enqueue(object : Callback<PokemonList> {
                override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
                }
@@ -124,9 +124,13 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
             override fun onResponse(call: Call<PokemonEvoChain>, response: Response<PokemonEvoChain>) {
                 val body = response.body()
-                val body2 = response.body()?.chain
+                val body2 = response.body()?.chain?.species?.name
+
+                body?.let { setOfStateTest(it) }
+
                 Log.d("ling", "$body2")
                 body?.let { startRealm2(it) }
+
 
             }
         })
@@ -151,6 +155,18 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                 })
             }
         }
+    }
+
+    fun setOfStateTest(data: PokemonEvoChain) {
+            setState {
+                copy(evoList = evoList.copy {
+                    this.sortBy {
+                        it.id
+                    }
+                    add(data)
+                })
+            }
+
     }
 
 
@@ -213,9 +229,17 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
     override fun epoxyController(): MvRxEpoxyController {
         return simpleController(viewModel) { state ->
+
+//            state.evoList.forEach {
+//                it.chain?.species?.name
+//                it.chain?.evoles?.get(0)?.species?.name
+//                it.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.name
+//            }
+
             state.pokeList.forEach {
                 pokemon {
                     id(it.id)
+
 
                     //Name and ID
                     title(it.name)

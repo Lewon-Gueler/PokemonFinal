@@ -29,6 +29,9 @@ import com.google.android.material.tabs.TabLayout
 import android.view.animation.DecelerateInterpolator
 import android.animation.ObjectAnimator
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.R.string
+
+
 
 
 
@@ -61,6 +64,8 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
 
     }
 
+
+
     fun onTab(index:Int?){
         setState {
             when(index) {
@@ -80,7 +85,7 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
         var progressStatus: Int = 0
         val handler = Handler()
 
-//
+
 //        val animation = ObjectAnimator.ofInt(progressBar, "progress", 100, 0)
 //        animation.duration = 3500 // 3.5 second
 //        animation.interpolator = DecelerateInterpolator()
@@ -103,6 +108,17 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
         }).start()
 
     }
+
+
+    fun chainImages(id1:String) :String? {
+
+        val realm = Realm.getDefaultInstance()
+        val image1 = realm.where(PokemonDatas::class.java).equalTo("id", id1).findFirst()?.toUnmanaged()
+
+        val pic1 = image1?.imageUri
+        return pic1
+
+        }
 
 
 
@@ -185,8 +201,8 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                             }
 
                             override fun onTabSelected(p0: TabLayout.Tab?) {
-                             val position = p0?.position
-                                viewModel.onTab(position)
+                             val index = p0?.position
+                                viewModel.onTab(index)
                             }
                         })
                     }
@@ -218,7 +234,8 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                             onBind{model, view, position ->
                                 it?.baseStat?.let { it1 ->
-                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1)
+                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
+//                                        progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
                                 }
 
                             }
@@ -237,6 +254,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     }
                 }
 
+
                 TabBarTyp.EVOCHAIN ->
                     evochain {
 
@@ -245,9 +263,17 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         val pokeEvo3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.name
 
 
-                        val pokeEvoUrl = state.evoChain?.chain?.species?.url
-                        val pokeEvoUrl2 = state.evoChain?.chain?.evoles?.get(0)?.species?.url
-                        val pokeEvoUrl3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.url
+//                        val pokeEvoUrl = state.evoChain?.chain?.species?.url?.split("/")
+//                        val pokeEvoUrl2 = state.evoChain?.chain?.evoles?.get(0)?.species?.url?.split("/")
+//                        val pokeEvoUrl3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.url?.split("/")
+//
+//
+//                        val index1 = pokeEvoUrl?.get(6)
+//                        val index2 = pokeEvoUrl2?.get(6)
+//                        val index3 = pokeEvoUrl3?.get(6)
+
+//                        index1?.let { viewModel.chainImages(it) }
+
 
                             id(4)
                         poke1(pokeEvo1)
@@ -255,8 +281,16 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         poke3(pokeEvo2)
                         poke4(pokeEvo3)
 
+                        lvlup(state.evoChain?.chain?.evoles?.get(0)?.evoDetail1?.get(0)?.minLvl.toString())
+                        lvlup2(state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.evoDetail?.get(0)?.level.toString())
+
+
+
+
+
                         onBind { model, view, position ->
-                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(state.evoChain?.imageUri) }
+                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(state.pokemon?.imageUri)
+                        }
 
 
                         }

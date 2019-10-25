@@ -56,7 +56,6 @@
             android:indeterminate="false"
             android:max="150"
             android:minWidth="250dp"
-
             android:progressDrawable="@drawable/greenprogress"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
