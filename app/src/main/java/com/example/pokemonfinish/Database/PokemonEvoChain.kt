@@ -11,7 +11,7 @@ open class PokemonEvoChain (
 
     @PrimaryKey
     @SerializedName("id")
-    var id: Int? = 1,
+    var id: Int? = 0,
 
     @SerializedName("chain")
     var chain: PokemonEvoSpecies? = null

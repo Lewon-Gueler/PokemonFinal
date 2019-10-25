@@ -97,6 +97,7 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
             }
 
             handler.post(Runnable{
+
         })
 
         }).start()
@@ -193,6 +194,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 }
             }
 
+            val list = arrayListOf("SPEED","SP-DEF","SP-ATK","DEF","ATK","HP")
 
             when(state.selectedTab) {
                 TabBarTyp.MOVES -> state.pokemon?.moves?.forEach {
@@ -203,18 +205,27 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 }
 
                 TabBarTyp.STATS ->
-                    state.pokemon?.stats?.forEach {
+
+                    state.pokemon?.stats?.forEachIndexed { index, it ->
                         states {
                             id(2)
                             baseState(it.baseStat.toString())
-                            stateName(it.stat?.name)
+                            stateName(list[index])
 
                             val baseStat = it.baseStat
-                            pokeProgress(baseStat)
-                          // colorHex(firstColor?.color)
+                            // pokeProgress(baseStat)
+                            // colorHex(firstColor?.color)
+
+                            onBind{model, view, position ->
+                                it?.baseStat?.let { it1 ->
+                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1)
+                                }
+
+                            }
 
                         }
                     }
+
 
                 TabBarTyp.EVOLUTIONS -> evolutions {
                     id(3)
@@ -232,6 +243,11 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         val pokeEvo1 = state.evoChain?.chain?.species?.name
                         val pokeEvo2 = state.evoChain?.chain?.evoles?.get(0)?.species?.name
                         val pokeEvo3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.name
+
+
+                        val pokeEvoUrl = state.evoChain?.chain?.species?.url
+                        val pokeEvoUrl2 = state.evoChain?.chain?.evoles?.get(0)?.species?.url
+                        val pokeEvoUrl3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.url
 
                             id(4)
                         poke1(pokeEvo1)

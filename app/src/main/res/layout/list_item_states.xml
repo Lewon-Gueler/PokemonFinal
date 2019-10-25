@@ -6,7 +6,7 @@
     <data>
         <variable name="baseState" type="String" />
         <variable name="stateName" type="String" />
-        <variable name="pokeProgress" type="Integer" />
+
 
 
     </data>
@@ -17,12 +17,12 @@
         android:background="@color/colorDarkTheme">
 
         <TextView
-            android:id="@+id/txtHpp"
-            android:layout_width="wrap_content"
+            android:id="@+id/txtSp"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@{stateName}"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -30,16 +30,16 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/txtHp"
-            android:layout_width="wrap_content"
+            android:id="@+id/txtSpeed"
+            android:layout_width="25dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@{baseState}"
             android:textColor="@color/colorWhite"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/txtHpp"
+            app:layout_constraintStart_toEndOf="@+id/txtSp"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
@@ -55,12 +55,12 @@
             android:layout_marginBottom="8dp"
             android:indeterminate="false"
             android:max="150"
-            android:minWidth="200dp"
-            android:progress="@{pokeProgress}"
+            android:minWidth="250dp"
+
             android:progressDrawable="@drawable/greenprogress"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/txtHp"
+            app:layout_constraintStart_toEndOf="@+id/txtSpeed"
             app:layout_constraintTop_toTopOf="parent" />
 
 

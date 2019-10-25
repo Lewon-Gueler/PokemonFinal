@@ -7,6 +7,9 @@ import io.realm.RealmObject
 open class PokemonEvoSpecies3 (
 
     @SerializedName("name")
-    var name: String = ""
+    var name: String = "",
+
+    @SerializedName("url")
+    var url:String = ""
 
 ) : RealmObject()

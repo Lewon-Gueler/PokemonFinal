@@ -124,7 +124,8 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
             override fun onResponse(call: Call<PokemonEvoChain>, response: Response<PokemonEvoChain>) {
                 val body = response.body()
-                Log.d("ling", "$body")
+                val body2 = response.body()?.chain
+                Log.d("ling", "$body2")
                 body?.let { startRealm2(it) }
 
             }
