@@ -10,8 +10,8 @@ import io.realm.annotations.RealmClass
 open class PokemonList: RealmObject() {
     @PrimaryKey
     @SerializedName("id")
-    var id: Int? = 0
+    var id: Int? = null
 
     @SerializedName("results")
-    var results: RealmList<PokemonDatas> = RealmList()
+    var results: RealmList<Pokemon> = RealmList()
 }

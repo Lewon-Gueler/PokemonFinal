@@ -8,7 +8,7 @@ import android.view.View
 import com.airbnb.epoxy.EpoxyRecyclerView
 import com.airbnb.mvrx.MvRxState
 import com.airbnb.mvrx.fragmentViewModel
-import com.example.pokemonfinish.Database.PokemonDatas
+import com.example.pokemonfinish.Database.Pokemon
 
 import de.ffuf.android.architecture.mvrx.MvRxEpoxyController
 import de.ffuf.android.architecture.mvrx.MvRxViewModel
@@ -17,42 +17,53 @@ import de.ffuf.android.architecture.realm.classes.toUnmanaged
 import de.ffuf.android.architecture.ui.base.binding.fragments.EpoxyFragment
 import io.realm.Realm
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
 import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
-import com.example.pokemonfinish.Database.PokemonEvoChain
+import com.example.pokemonfinish.Database.EvolutionChain
+import com.example.pokemonfinish.Database.Species
 import com.example.pokemonfinish.databinding.*
 import com.google.android.material.tabs.TabLayout
-import android.view.animation.DecelerateInterpolator
-import android.animation.ObjectAnimator
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.R.string
-
-
-
-
 
 
 /**
  * A simple [Fragment] subclass.
  */
 
-data class InfoState(val pokemon: PokemonDatas? = null, val selectedTab:TabBarTyp? = TabBarTyp.STATS, val evoChain: PokemonEvoChain? = null): MvRxState
+data class InfoState(val pokemon: Pokemon? = null, val selectedTab:TabBarTyp? = TabBarTyp.STATS, val evoChain: EvolutionChain? = null): MvRxState
 
 
 class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState) {
 
-
+val TAG = "InfoModel"
 
 
     fun getRealmData(pokeId: Int) {
         val realm = Realm.getDefaultInstance()
-        val evoChain = realm.where(PokemonEvoChain::class.java).equalTo("id",pokeId).findFirst()?.toUnmanaged()
-        val pokemon = realm.where(PokemonDatas::class.java).equalTo("id", pokeId).findFirst()?.toUnmanaged()
 
+
+
+
+        val pokemon = realm.where(Pokemon::class.java).equalTo("id", pokeId).findFirst()?.toUnmanaged()
+        val species = realm.where(Species::class.java).equalTo("name",pokemon?.species?.name).sort("id").findFirst()?.toUnmanaged()
+
+        val evoChain = realm.where(EvolutionChain::class.java).equalTo("url" , species?.evoChain?.url).findFirst()?.toUnmanaged()
+        Log.d(TAG,"${pokemon?.name}")
+        Log.d(TAG,"${pokemon?.species?.name}")
+        Log.d(TAG,"${pokemon?.species?.id}")
+
+        Log.d(TAG,"${pokemon?.species?.evoChain?.chain?.species?.name}")
+        Log.d(TAG,"${pokemon?.species?.evoChain?.id}")
+
+        Log.d(TAG,"${ pokemon?.species?.evoChain?.chain?.evolves?.get(0)?.species?.id}")
+        Log.d(TAG,"${ pokemon?.species?.evoChain?.chain?.species?.id}")
+
+//        Log.d(TAG,"${species?.name}")
+//        Log.d(TAG,"${species?.id}")
+//
+//        Log.d(TAG,"${species?.evoChain?.url}")
+//        Log.d(TAG,"${evoChain?.id}")
 
         setState {
             copy(pokemon = pokemon)
@@ -63,7 +74,6 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
         }
 
     }
-
 
 
     fun onTab(index:Int?){
@@ -113,7 +123,7 @@ class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState)
     fun chainImages(id1:String) :String? {
 
         val realm = Realm.getDefaultInstance()
-        val image1 = realm.where(PokemonDatas::class.java).equalTo("id", id1).findFirst()?.toUnmanaged()
+        val image1 = realm.where(Pokemon::class.java).equalTo("id", id1).findFirst()?.toUnmanaged()
 
         val pic1 = image1?.imageUri
         return pic1
@@ -255,45 +265,36 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 }
 
 
-                TabBarTyp.EVOCHAIN ->
-                    evochain {
+                TabBarTyp.EVOCHAIN -> {
+                    var chain = state.pokemon?.species?.evoChain?.chain?.evolves?.getOrNull(0)
+                    var beforeName =  chain?.species?.name
+                    var afterName: String?
+                    var lvl: String?
 
-                        val pokeEvo1 = state.evoChain?.chain?.species?.name
-                        val pokeEvo2 = state.evoChain?.chain?.evoles?.get(0)?.species?.name
-                        val pokeEvo3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.name
-
-
-//                        val pokeEvoUrl = state.evoChain?.chain?.species?.url?.split("/")
-//                        val pokeEvoUrl2 = state.evoChain?.chain?.evoles?.get(0)?.species?.url?.split("/")
-//                        val pokeEvoUrl3 = state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.species3?.url?.split("/")
-//
-//
-//                        val index1 = pokeEvoUrl?.get(6)
-//                        val index2 = pokeEvoUrl2?.get(6)
-//                        val index3 = pokeEvoUrl3?.get(6)
-
-//                        index1?.let { viewModel.chainImages(it) }
-
-
+                    while (chain != null) {
+                        afterName = chain.species?.name
+                        lvl = chain.evoDetails.getOrNull(0)?.minLvl.toString()
+                        evochain {
                             id(4)
-                        poke1(pokeEvo1)
-                        poke2(pokeEvo2)
-                        poke3(pokeEvo2)
-                        poke4(pokeEvo3)
-
-                        lvlup(state.evoChain?.chain?.evoles?.get(0)?.evoDetail1?.get(0)?.minLvl.toString())
-                        lvlup2(state.evoChain?.chain?.evoles?.get(0)?.evoTo?.get(0)?.evoDetail?.get(0)?.level.toString())
-
-
-
-
+                            poke1(beforeName)
+                            poke2(afterName)
+                            lvlup(lvl)
 
                         onBind { model, view, position ->
-                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(state.pokemon?.imageUri)
+                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(state.evoChain?.imageUri)
+                            (view.dataBinding as? ListItemEvochainBinding)?.iV2?.setImageURI(state.evoChain?.imageUri)
                         }
 
 
                         }
+
+                        //TODO itaration through evoloves
+                        chain = chain.evolves.getOrNull(0)
+                        beforeName = afterName
+                        afterName = chain?.species?.name
+                    }
+
+                }
 
                     }
             }
