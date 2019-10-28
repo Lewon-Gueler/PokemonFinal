@@ -32,6 +32,12 @@ import com.example.pokemonfinish.Database.Species
 import com.example.pokemonfinish.databinding.*
 import com.facebook.drawee.view.SimpleDraweeView
 import com.google.android.material.tabs.TabLayout
+import android.graphics.PorterDuff
+import androidx.core.content.ContextCompat
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
+
+
 
 
 /**
@@ -44,7 +50,6 @@ data class InfoState(val pokemon: Pokemon? = null, val selectedTab:TabBarTyp? = 
 class InfoModel(initialState: InfoState): MvRxViewModel<InfoState>(initialState) {
 
 val TAG = "InfoModel"
-
 
     fun getRealmData(pokeId: Int) {
         val realm = Realm.getDefaultInstance()
@@ -91,39 +96,6 @@ val TAG = "InfoModel"
         }
     }
 
-    fun progressAnimaton(state: Int) {
-
-        val progressBar: ProgressBar
-        var progressStatus: Int = 0
-        val handler = Handler()
-
-
-//        val animation = ObjectAnimator.ofInt(progressBar, "progress", 100, 0)
-//        animation.duration = 3500 // 3.5 second
-//        animation.interpolator = DecelerateInterpolator()
-//        animation.start()
-
-        Thread(Runnable {
-            while (progressStatus < 100)
-                progressStatus += 1
-
-            try {
-                Thread.sleep(200)
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
-
-            handler.post(Runnable{
-
-        })
-
-        }).start()
-
-    }
-
-
-
-
 
 }
 
@@ -149,7 +121,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
     }
 
 
-
+//TODO Ab dem Zeitpunkt wo Zugriff auf Tabbar ist TABBAR State nochmal setzen!
     override fun epoxyController(): MvRxEpoxyController {
 
         return simpleController(viewModel) { state -> state.pokemon
@@ -168,7 +140,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     //First Type
                         typ1(firstName)
                         colorHexString(firstColor?.color)
-                        colorHexString2("#121212")
+//                        colorHexString2("#121212")
 
                     if (state.pokemon?.types?.size == 2) {
                         val secondN = state.pokemon?.types?.get(1)?.type?.name
@@ -233,23 +205,26 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                             // colorHex(firstColor?.color)
 
-//                            onBind{model, view, position ->
-//                                it?.baseStat?.let { it1 ->
-//
-//                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.progressDrawable?.setColorFilter(Color.parseColor(firstColor?.color), android.graphics.PorterDuff.Mode.SRC_IN)
-//
-//
-//                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
-//
-//                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.startAnimation()
-//
-//                                    //.indeterminateTintList = ColorStateList.valueOf(Color.MAGENTA)
-//                                    //.setProgress(it1,true)
-//
-////                                  progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
-//                                }
-//
-//                            }
+                            onBind{model, view, position ->
+                                it?.baseStat?.let { it1 ->
+                                    val progressBarDrawable =  (view.dataBinding as? ListItemStatesBinding)?.progressBar?.getProgressDrawable() as LayerDrawable
+                                    val progressDrawable = progressBarDrawable.getDrawable(1)
+                                    progressDrawable.setColorFilter(Color.parseColor(firstColor?.color), PorterDuff.Mode.SRC_IN)
+
+                                        //progressDrawable?.setColorFilter(Color.parseColor(firstColor?.color), android.graphics.PorterDuff.Mode.SRC_IN)
+
+
+                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
+
+                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.startAnimation()
+
+                                    //.indeterminateTintList = ColorStateList.valueOf(Color.MAGENTA)
+                                    //.setProgress(it1,true)
+
+//                                  progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
+                                }
+
+                            }
 
                         }
                     }
@@ -270,40 +245,34 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     var chain = state.pokemon?.species?.evoChain?.chain?.evolves?.getOrNull(0)
                     var beforeName =  state.pokemon?.species?.evoChain?.chain?.species?.name
                     var afterName: String?
-
+                    var lvl: String?
                     var picEvo1 = state.pokemon?.species?.evoChain?.chain?.species?.imageUri
                     var picEvo2 = chain?.species?.imageUri
-
-                    var lvl: String?
 
                     while (chain != null) {
 
                         afterName = chain.species?.name
                         lvl = chain.evoDetails.getOrNull(0)?.minLvl.toString()
+
                         evochain {
                             id(4)
                             poke1(beforeName)
                             poke2(afterName)
+                            lvlup(lvl)
                             image1(picEvo1)
                             image2(picEvo2)
-
-                            lvlup(lvl)
-                            Log.d("PICS","$picEvo1")
-                            Log.d("PICS","$picEvo2")
-                            //TODO Rewrite logic for images
-
                         }
 
                         //TODO itaration through evoloves
+
                         chain = chain.evolves.getOrNull(0)
 
                         beforeName = afterName
                         afterName = chain?.species?.name
 
                         picEvo1 = picEvo2
-                        Log.d("PICS","$picEvo1")
                         picEvo2 =  chain?.species?.imageUri
-                        Log.d("PICS","$picEvo2")
+
 
                     }
 
@@ -339,15 +308,3 @@ fun setAnimation(progressBar: ProgressBar, pokeProgress: Int) {
 //            background.setColor(Color.parseColor(colorHexString))
 //        }
 //    }
-
-
-
-//@BindingAdapter("ProColor")
-//fun setProColor(progress: ProgressBar, colorHex: String?) {
-//    val background = progress.background
-//    colorHex?.let {
-//        if (background is GradientDrawable) {
-//            background.setColor(Color.parseColor(colorHex))
-//        }
-//    }
-//}

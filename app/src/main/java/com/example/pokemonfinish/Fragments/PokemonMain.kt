@@ -37,9 +37,15 @@ import retrofit2.Response
  */
 //Data Class Later Database
 
-data class PokemonState(val pokeList: List<Pokemon> = emptyList(), val evoList: List<EvolutionChain> = emptyList()) : MvRxState
+/**
+ * MvRxState with a list
+ */
+data class PokemonState(val pokeList: List<Pokemon> = emptyList()) : MvRxState
 
 
+/**
+ * MvRxViewModel with all logic functions
+ */
 class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(initialState) {
 
     //Creating Realm Instance
@@ -49,26 +55,26 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
     val pokemonNetwork: DownloadPokemon = DownloadPokemon()
     val service = pokemonNetwork.service
 
+    //Logging
     val TAG = "PokemonModel"
 
+    //First Server Request get the amount of pokemons
    fun getPokemon() {
 
-           service.getAllPokemonDatas(30, 0).enqueue(object : Callback<PokemonList> {
-               override fun onFailure(call: Call<PokemonList>, t: Throwable) {
+       service.getAllPokemonDatas(200, 0).enqueue(object : Callback<PokemonList> {
+           override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
                }
 
                override fun onResponse(call: Call<PokemonList>, response: Response<PokemonList>) {
-
                    response.body()?.results?.forEach { pokemon ->
                        getPokemonDetails(pokemon)
                    }
-
                }
            })
        }
 
-
+    //Second Server Request get the url
     fun getPokemonDetails(pokemon: Pokemon) {
         val newURL = pokemon.url
 
@@ -76,27 +82,27 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         newURL?.let {
             service.getPokeURL(newURL).enqueue(object: Callback<Pokemon> {
                 override fun onFailure(call: Call<Pokemon>, t: Throwable) {
+
                 }
 
                 override fun onResponse(call: Call<Pokemon>, response: Response<Pokemon>) {
-
                     val allData = response.body()
                     val newId = allData?.id
-                    Log.d(TAG,"Pokemon ID: $newId")
 
+                    Log.d(TAG,"Pokemon ID: $newId")
                     setOfState(allData)
 
-
+                    //Set url
                     allData?.url = pokemon.url
                     getPokemonSpcies(allData)
 
                     //response.body()?.species?.let { it1 -> getPokemonSpcies(it1) }
-
                 }
             })
         }
     }
 
+    //Third Server Request
     fun getPokemonSpcies(pokemon: Pokemon?) {
         val speciesURL = pokemon?.species?.url
 
@@ -113,24 +119,19 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     val resSpec = response.body()
                     Log.d(TAG, "ChainURL: $resSpec")
 
-                    //Setting the right URL
+                    //Set url from species
                     resSpec?.url = pokemon.species?.url
                     pokemon.species = resSpec
 
-                    // resSpec?.let { startRealm2(it) }
                     getEvolutionChain(pokemon)
 
-                    //resSpec?.evoChain?.let { getEvolutionChain(it) }
                 }
-
             })
         }
     }
 
     fun getEvolutionChain(pokemon: Pokemon) {
-
         val chainURL = pokemon.species?.evoChain?.url
-
         Log.d(TAG,"URL for Evo Chain: $chainURL")
 
         chainURL?.let {
@@ -143,13 +144,12 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     val body = response.body()
 
                     Log.d(TAG, "Pokemon Evolution Chain Content: $body.")
-                    body?.let { setOfStateTest(it) }
 
                     var chain = body?.chain
 
                     while (chain != null) {
 
-                        //Splitt URL to get ID
+                        //Splitt URL to get ID and save in species
                         val splittetURL = chain.species?.url?.split("/")
                         chain.species?.id = splittetURL?.get(6)?.toInt()
 
@@ -159,20 +159,15 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     }
 
                     body?.url = chainURL
-                    body?.chain?.species
+                   // body?.chain?.species
                     pokemon.species?.evoChain = body
 
                     startRealm(pokemon)
-
-               //   body?.let { startRealm3(it) }
-
 
                 }
             })
         }
     }
-
-
 
     override fun onCleared() {
         super.onCleared()
@@ -193,73 +188,12 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         }
     }
 
-    fun setOfStateTest(data: EvolutionChain) {
-            setState {
-                copy(evoList = evoList.copy {
-                    this.sortBy {
-                        it.id
-                    }
-                    add(data)
-                })
-            }
 
-    }
-
-//    fun  startRealmPokemon(allData:Pokemon) {
-//        Log.d(TAG,"${allData.name} : ${allData.id}")
-//        realm.beginTransaction()
-//        realm.copyToRealmOrUpdate(allData)
-//        realm.commitTransaction()
-//    }
-
-
-    fun startRealm(pokemonData: Pokemon) { //, newData: EvolutionChain  realm.copyToRealmOrUpdate(newData)
-
-        Log.d(TAG,"${pokemonData.name} : ${pokemonData.species?.name}")
-        Log.d(TAG,"${pokemonData.species?.evoChain?.id} : ${pokemonData.species?.evoChain?.url}")
-        Log.d(TAG,"${pokemonData.id} : ${pokemonData.species?.evoChain?.id}")
-
-        Log.d(TAG,"${pokemonData.species?.evoChain?.chain?.species?.name} : ")
-
+    fun startRealm(pokemonData: Pokemon) {
         realm.beginTransaction()
-        val pokemonCopy = realm.copyToRealmOrUpdate(pokemonData)
+        realm.copyToRealmOrUpdate(pokemonData)
         realm.commitTransaction()
-        Log.d(TAG,"${pokemonCopy.name} : ${pokemonCopy.species?.name}")
-        Log.d(TAG,"${pokemonCopy.species?.evoChain?.chain?.species?.id} : ${pokemonCopy.species?.evoChain?.chain?.species?.id}")
-        Log.d(TAG,"${pokemonCopy.species?.evoChain?.chain?.evolves?.get(0)?.species?.id} : ${pokemonCopy.species?.evoChain?.chain?.evolves?.get(0)?.species?.id}")
     }
-
-    fun startRealm2(bodyData: Species) {
-        Log.d(TAG,"${bodyData.name} : ${bodyData.evoChain?.url}")
-        realm.beginTransaction()
-        val results = realm.where(Species::class.java).equalTo("name",bodyData.name).findAll()
-        bodyData.id?.let { results.setInt("id", it) }
-        results.setObject("evoChain",bodyData.evoChain)
-        realm.commitTransaction()
-
-//        val species =  realm.copyToRealmOrUpdate(bodyData)
-
-//        Log.d(TAG,"${species.name} : ${species.evoChain?.url}")
-    }
-
-
-    fun startRealm3(bodyData: EvolutionChain) {
-        Log.d(TAG,"${bodyData.id} : ${bodyData.url}")
-        realm.beginTransaction()
-       val chain = realm.copyToRealmOrUpdate(bodyData)
-        realm.commitTransaction()
-        Log.d(TAG,"${chain.id} : ${chain.url}")
-    }
-
-
-
-
-//    fun saveInReaml(data: List<RealmObject>) { Oder List<Pokemon>
-//
-//        realm.beginTransaction()
-//        realm.copyToRealmOrUpdate(data)
-//        realm.commitTransaction()
-//    }
 
 
     fun realmCheck() {
@@ -274,8 +208,6 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
             }
         }
     }
-
-
 }
 
 
@@ -310,10 +242,9 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
             state.pokeList.forEach {
                 pokemon {
                     Log.d("pokemon exist","${it.id}")
+
+                    //set UI-Elements
                     id(it.id)
-
-
-                    //Name and ID
                     title(it.name)
                     index(it.id.toString())
 
@@ -323,9 +254,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                         }
                     }
 
-
                     //Types Checking and Color Setting: NEED To Refector
-
                     if (it.types?.size == 2) {
 
                         val firstN = it.types?.get(0)?.type?.name
@@ -339,7 +268,6 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                         typ2(firstN)
                         colorHexString2(firstC?.color)
-
 
                     } else {
                         val firstN = it.types?.get(0)?.type?.name
