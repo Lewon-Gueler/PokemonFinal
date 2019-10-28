@@ -12,8 +12,7 @@
         android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid
-                    android:color="@color/colorRed" />
+                <solid />
                 <corners android:radius="16dp"/>
             </shape>
         </clip>

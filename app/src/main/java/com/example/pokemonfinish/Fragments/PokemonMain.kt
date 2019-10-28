@@ -53,7 +53,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
    fun getPokemon() {
 
-           service.getAllPokemonDatas(9, 0).enqueue(object : Callback<PokemonList> {
+           service.getAllPokemonDatas(30, 0).enqueue(object : Callback<PokemonList> {
                override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
                }
@@ -86,10 +86,6 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
                     setOfState(allData)
 
-//                    val newList: ArrayList<Pokemon> = ArrayList()
-//                    allData?.let { it1 -> newList.add(it1) }
-
-                    //allData?.let { it1 -> startRealm(it1) }
 
                     allData?.url = pokemon.url
                     getPokemonSpcies(allData)
@@ -116,6 +112,8 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
                     val resSpec = response.body()
                     Log.d(TAG, "ChainURL: $resSpec")
+
+                    //Setting the right URL
                     resSpec?.url = pokemon.species?.url
                     pokemon.species = resSpec
 
@@ -148,10 +146,13 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     body?.let { setOfStateTest(it) }
 
                     var chain = body?.chain
+
                     while (chain != null) {
 
+                        //Splitt URL to get ID
                         val splittetURL = chain.species?.url?.split("/")
                         chain.species?.id = splittetURL?.get(6)?.toInt()
+
                         chain.species?.evoChain = body
                         chain = chain.evolves.getOrNull(0)
 
@@ -160,8 +161,6 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     body?.url = chainURL
                     body?.chain?.species
                     pokemon.species?.evoChain = body
-
-
 
                     startRealm(pokemon)
 
@@ -214,16 +213,16 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 //    }
 
 
-    fun startRealm(allData: Pokemon) { //, newData: EvolutionChain  realm.copyToRealmOrUpdate(newData)
+    fun startRealm(pokemonData: Pokemon) { //, newData: EvolutionChain  realm.copyToRealmOrUpdate(newData)
 
-        Log.d(TAG,"${allData.name} : ${allData.species?.name}")
-        Log.d(TAG,"${allData.species?.evoChain?.id} : ${allData.species?.evoChain?.url}")
-        Log.d(TAG,"${allData.id} : ${allData.species?.evoChain?.id}")
+        Log.d(TAG,"${pokemonData.name} : ${pokemonData.species?.name}")
+        Log.d(TAG,"${pokemonData.species?.evoChain?.id} : ${pokemonData.species?.evoChain?.url}")
+        Log.d(TAG,"${pokemonData.id} : ${pokemonData.species?.evoChain?.id}")
 
-        Log.d(TAG,"${allData.species?.evoChain?.chain?.species?.name} : ")
+        Log.d(TAG,"${pokemonData.species?.evoChain?.chain?.species?.name} : ")
 
         realm.beginTransaction()
-        val pokemonCopy = realm.copyToRealmOrUpdate(allData)
+        val pokemonCopy = realm.copyToRealmOrUpdate(pokemonData)
         realm.commitTransaction()
         Log.d(TAG,"${pokemonCopy.name} : ${pokemonCopy.species?.name}")
         Log.d(TAG,"${pokemonCopy.species?.evoChain?.chain?.species?.id} : ${pokemonCopy.species?.evoChain?.chain?.species?.id}")

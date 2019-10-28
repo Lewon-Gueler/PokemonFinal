@@ -1,6 +1,8 @@
 package com.example.pokemonfinish.Fragments
 
 
+import android.animation.ObjectAnimator
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.os.Handler
 import androidx.fragment.app.Fragment
@@ -17,13 +19,18 @@ import de.ffuf.android.architecture.realm.classes.toUnmanaged
 import de.ffuf.android.architecture.ui.base.binding.fragments.EpoxyFragment
 import io.realm.Realm
 import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.drawable.GradientDrawable
 import android.util.Log
+import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
+import androidx.databinding.BindingAdapter
 import com.airbnb.mvrx.MvRx
 import com.example.pokemonfinish.*
 import com.example.pokemonfinish.Database.EvolutionChain
 import com.example.pokemonfinish.Database.Species
 import com.example.pokemonfinish.databinding.*
+import com.facebook.drawee.view.SimpleDraweeView
 import com.google.android.material.tabs.TabLayout
 
 
@@ -42,13 +49,10 @@ val TAG = "InfoModel"
     fun getRealmData(pokeId: Int) {
         val realm = Realm.getDefaultInstance()
 
-
-
-
         val pokemon = realm.where(Pokemon::class.java).equalTo("id", pokeId).findFirst()?.toUnmanaged()
-        val species = realm.where(Species::class.java).equalTo("name",pokemon?.species?.name).sort("id").findFirst()?.toUnmanaged()
-
+        val species = realm.where(Species::class.java).equalTo("name",pokemon?.species?.name).findFirst()?.toUnmanaged()
         val evoChain = realm.where(EvolutionChain::class.java).equalTo("url" , species?.evoChain?.url).findFirst()?.toUnmanaged()
+
         Log.d(TAG,"${pokemon?.name}")
         Log.d(TAG,"${pokemon?.species?.name}")
         Log.d(TAG,"${pokemon?.species?.id}")
@@ -56,14 +60,12 @@ val TAG = "InfoModel"
         Log.d(TAG,"${pokemon?.species?.evoChain?.chain?.species?.name}")
         Log.d(TAG,"${pokemon?.species?.evoChain?.id}")
 
-        Log.d(TAG,"${ pokemon?.species?.evoChain?.chain?.evolves?.get(0)?.species?.id}")
-        Log.d(TAG,"${ pokemon?.species?.evoChain?.chain?.species?.id}")
+        Log.d(TAG,"${pokemon?.species?.evoChain?.chain?.evolves?.get(0)?.species?.id}")
+        Log.d(TAG,"${pokemon?.species?.evoChain?.chain?.species?.id}")
 
-//        Log.d(TAG,"${species?.name}")
-//        Log.d(TAG,"${species?.id}")
-//
-//        Log.d(TAG,"${species?.evoChain?.url}")
-//        Log.d(TAG,"${evoChain?.id}")
+        Log.d(TAG,"${pokemon?.species?.evoChain?.chain?.species?.evolvesfrom?.name}")
+
+
 
         setState {
             copy(pokemon = pokemon)
@@ -118,17 +120,6 @@ val TAG = "InfoModel"
         }).start()
 
     }
-
-
-    fun chainImages(id1:String) :String? {
-
-        val realm = Realm.getDefaultInstance()
-        val image1 = realm.where(Pokemon::class.java).equalTo("id", id1).findFirst()?.toUnmanaged()
-
-        val pic1 = image1?.imageUri
-        return pic1
-
-        }
 
 
 
@@ -237,14 +228,23 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                             id(2)
                             baseState(it.baseStat.toString())
                             stateName(list[index])
+                            pokeProgress(it.baseStat)
 
-                            val baseStat = it.baseStat
-                            // pokeProgress(baseStat)
                             // colorHex(firstColor?.color)
 
                             onBind{model, view, position ->
                                 it?.baseStat?.let { it1 ->
-                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
+
+                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.progressDrawable?.setColorFilter(Color.parseColor(firstColor?.color), android.graphics.PorterDuff.Mode.SRC_IN)
+
+                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
+
+
+                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.startAnimation()
+
+                                    //.indeterminateTintList = ColorStateList.valueOf(Color.MAGENTA)
+                                    //.setProgress(it1,true)
+
 //                                        progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
                                 }
 
@@ -267,31 +267,54 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                 TabBarTyp.EVOCHAIN -> {
                     var chain = state.pokemon?.species?.evoChain?.chain?.evolves?.getOrNull(0)
-                    var beforeName =  chain?.species?.name
+                    var beforeName =  state.pokemon?.species?.evoChain?.chain?.species?.name
                     var afterName: String?
+
+                    var picEvo1 = state.pokemon?.species?.evoChain?.chain?.species?.imageUri
+                    var picEvo2 = chain?.species?.imageUri
+
+
                     var lvl: String?
 
+
                     while (chain != null) {
+
                         afterName = chain.species?.name
                         lvl = chain.evoDetails.getOrNull(0)?.minLvl.toString()
                         evochain {
                             id(4)
                             poke1(beforeName)
                             poke2(afterName)
+                            image1(picEvo1)
+                            image2(picEvo2)
+
+
                             lvlup(lvl)
+                            Log.d("PICS","$picEvo1")
+                            Log.d("PICS","$picEvo2")
 
-                        onBind { model, view, position ->
-                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(state.evoChain?.imageUri)
-                            (view.dataBinding as? ListItemEvochainBinding)?.iV2?.setImageURI(state.evoChain?.imageUri)
+                            //TODO Rewrite logic for images
+//                        onBind { model, view, position ->
+//                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(picEvo1)
+//                            Log.d("PICS","$picEvo1")
+//                            (view.dataBinding as? ListItemEvochainBinding)?.iV2?.setImageURI(picEvo2)
+//                            Log.d("PICS","$picEvo2")
+//                        }
+
                         }
 
-
-                        }
 
                         //TODO itaration through evoloves
                         chain = chain.evolves.getOrNull(0)
+
                         beforeName = afterName
                         afterName = chain?.species?.name
+
+                        picEvo1 = picEvo2
+                        Log.d("PICS","$picEvo1")
+                        picEvo2 =  chain?.species?.imageUri
+                        Log.d("PICS","$picEvo2")
+
                     }
 
                 }
@@ -301,6 +324,24 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
         }
 
     }
+
+@BindingAdapter("backImage")
+fun setBack(simpleView: SimpleDraweeView, imageUri: String?) {
+    imageUri?.let {
+        simpleView.setImageURI(it)
+    }
+}
+
+@BindingAdapter("onAnimation")
+fun setAnimation(progressBar: ProgressBar, pokeProgress: Int) {
+    val animation = ObjectAnimator.ofInt(progressBar, "progress", 0, pokeProgress)
+    animation.duration = 1000 // 1 second
+    animation.interpolator = DecelerateInterpolator()
+    animation.start()
+}
+
+
+
 
 
 //@BindingAdapter("ProColor")

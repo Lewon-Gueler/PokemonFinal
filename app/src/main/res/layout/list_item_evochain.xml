@@ -6,9 +6,10 @@
     <data>
         <variable name="poke1" type="String" />
         <variable name="poke2" type="String" />
-
         <variable name="lvlup" type="String" />
 
+        <variable name="image1" type="String" />
+        <variable name="image2" type="String" />
 
     </data>
 
@@ -19,6 +20,7 @@
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/iV1"
+            backImage ="@{image1}"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginStart="16dp"
@@ -55,6 +57,7 @@
 
         <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/iV2"
+            backImage ="@{image2}"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginTop="8dp"

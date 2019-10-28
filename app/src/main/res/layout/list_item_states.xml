@@ -6,6 +6,8 @@
     <data>
         <variable name="baseState" type="String" />
         <variable name="stateName" type="String" />
+        <variable name="pokeProgress" type="Integer" />
+
 
 
 
@@ -46,6 +48,7 @@
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="wrap_content"
+            onAnimation="@{pokeProgress}"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
@@ -56,7 +59,6 @@
             android:indeterminate="false"
             android:max="150"
             android:minWidth="250dp"
-            android:progressDrawable="@drawable/greenprogress"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/txtSpeed"
