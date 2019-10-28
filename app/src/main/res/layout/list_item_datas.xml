@@ -7,6 +7,7 @@
         <variable name="heigth" type="String" />
         <variable name="weigth" type="String" />
         <variable name="title" type="String" />
+        <variable name="info" type="String" />
 
         <variable name="typ1" type="String" />
         <variable name="typ2" type="String" />
@@ -32,7 +33,7 @@
 
             android:id="@+id/constraintLayout2"
             android:layout_width="0dp"
-            android:layout_height="170dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="235dp"
             android:background="@drawable/layout_bg"
             app:layout_constraintEnd_toEndOf="parent"
@@ -105,42 +106,54 @@
                 app:layout_constraintTop_toBottomOf="@+id/textName" />
 
             <TextView
-                tagColor="@{colorHexString}"
                 android:id="@+id/typMain1"
+                tagColor="@{colorHexString}"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_round"
                 android:gravity="center"
                 android:text="@{typ1}"
-                android:background="@drawable/ic_round"
                 android:textColor="@color/colorWhite"
                 android:textStyle="bold"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/typMain2"
                 app:layout_constraintTop_toBottomOf="@+id/textWeigth"
                 tools:text="poison" />
 
             <TextView
-                tagColor="@{colorHexString2}"
                 android:id="@+id/typMain2"
+                tagColor="@{colorHexString2}"
                 android:layout_width="50dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="143dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
+                android:background="@drawable/ic_round"
                 android:gravity="center"
                 android:text="@{typ2}"
-                android:background="@drawable/ic_round"
                 android:textColor="@color/colorWhite"
                 android:textStyle="bold"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textH"
                 tools:text="grass" />
+
+            <TextView
+                android:id="@+id/txtInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="24dp"
+                android:text="@{info}"
+                android:textColor="@color/colorWhite"
+                android:textSize="15dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/typMain1" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

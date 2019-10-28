@@ -162,6 +162,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     title(state.pokemon?.name)
                     heigth(state.pokemon?.height.toString())
                     weigth(state.pokemon?.weight.toString())
+                    info("Text about the Pokemon is in Species Database")
                     backColor(Color.parseColor(firstColor?.color))
 
                     //First Type
@@ -232,23 +233,23 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
 
                             // colorHex(firstColor?.color)
 
-                            onBind{model, view, position ->
-                                it?.baseStat?.let { it1 ->
-
-                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.progressDrawable?.setColorFilter(Color.parseColor(firstColor?.color), android.graphics.PorterDuff.Mode.SRC_IN)
-
-                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
-
-
-                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.startAnimation()
-
-                                    //.indeterminateTintList = ColorStateList.valueOf(Color.MAGENTA)
-                                    //.setProgress(it1,true)
-
-//                                        progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
-                                }
-
-                            }
+//                            onBind{model, view, position ->
+//                                it?.baseStat?.let { it1 ->
+//
+//                                    (view.dataBinding as? ListItemStatesBinding)?.progressBar?.progressDrawable?.setColorFilter(Color.parseColor(firstColor?.color), android.graphics.PorterDuff.Mode.SRC_IN)
+//
+//
+//                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.setProgress(it1,true)
+//
+//                                    //(view.dataBinding as? ListItemStatesBinding)?.progressBar?.startAnimation()
+//
+//                                    //.indeterminateTintList = ColorStateList.valueOf(Color.MAGENTA)
+//                                    //.setProgress(it1,true)
+//
+////                                  progressDrawable?.colorFilter(Color.parseColor("#2a4c6b"))
+//                                }
+//
+//                            }
 
                         }
                     }
@@ -273,9 +274,7 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     var picEvo1 = state.pokemon?.species?.evoChain?.chain?.species?.imageUri
                     var picEvo2 = chain?.species?.imageUri
 
-
                     var lvl: String?
-
 
                     while (chain != null) {
 
@@ -288,21 +287,12 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                             image1(picEvo1)
                             image2(picEvo2)
 
-
                             lvlup(lvl)
                             Log.d("PICS","$picEvo1")
                             Log.d("PICS","$picEvo2")
-
                             //TODO Rewrite logic for images
-//                        onBind { model, view, position ->
-//                            (view.dataBinding as? ListItemEvochainBinding)?.iV1?.setImageURI(picEvo1)
-//                            Log.d("PICS","$picEvo1")
-//                            (view.dataBinding as? ListItemEvochainBinding)?.iV2?.setImageURI(picEvo2)
-//                            Log.d("PICS","$picEvo2")
-//                        }
 
                         }
-
 
                         //TODO itaration through evoloves
                         chain = chain.evolves.getOrNull(0)
@@ -338,9 +328,17 @@ fun setAnimation(progressBar: ProgressBar, pokeProgress: Int) {
     animation.duration = 1000 // 1 second
     animation.interpolator = DecelerateInterpolator()
     animation.start()
+
 }
 
 
+//,colorHexString: String?
+//    val background = progressBar.background
+//    colorHexString?.let {
+//        if (background is GradientDrawable) {
+//            background.setColor(Color.parseColor(colorHexString))
+//        }
+//    }
 
 
 
