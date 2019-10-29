@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -19,7 +18,6 @@ import com.example.pokemonfinish.Database.*
 import com.example.pokemonfinish.Networking.DownloadPokemon
 import com.example.pokemonfinish.R
 import com.example.pokemonfinish.databinding.FragmentPokemonMainBinding
-import com.example.pokemonfinish.databinding.ListItemPokemonBinding
 import com.example.pokemonfinish.pokemon
 import de.ffuf.android.architecture.binding.copy
 import de.ffuf.android.architecture.mvrx.MvRxEpoxyController
@@ -35,7 +33,7 @@ import retrofit2.Response
 /**
  * A simple [Fragment] subclass.
  */
-//Data Class Later Database
+
 
 /**
  * MvRxState with a list
@@ -61,7 +59,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
     //First Server Request get the amount of pokemons
    fun getPokemon() {
 
-       service.getAllPokemonDatas(200, 0).enqueue(object : Callback<PokemonList> {
+       service.getAllPokemonDatas(20, 0).enqueue(object : Callback<PokemonList> {
            override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
                }
@@ -96,7 +94,6 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     allData?.url = pokemon.url
                     getPokemonSpcies(allData)
 
-                    //response.body()?.species?.let { it1 -> getPokemonSpcies(it1) }
                 }
             })
         }
@@ -159,7 +156,6 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     }
 
                     body?.url = chainURL
-                   // body?.chain?.species
                     pokemon.species?.evoChain = body
 
                     startRealm(pokemon)
@@ -174,7 +170,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         realm.close()
     }
 
-
+    //Set List in the state
     fun setOfState(datas: Pokemon?) {
         datas?.let {
             setState {
@@ -188,15 +184,15 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         }
     }
 
-
+    //fun for saving data in the database
     fun startRealm(pokemonData: Pokemon) {
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(pokemonData)
         realm.commitTransaction()
     }
 
-
-    fun realmCheck() {
+    //checks if the database is empty or not. If datas are empty starts Server Requests
+    fun databaseCheck() {
         val db = realm.where(Pokemon::class.java).sort("id").findAll()
         val dbp = realm.copyFromRealm(db)
 
@@ -210,7 +206,9 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
     }
 }
 
-
+/**
+ * Epoxy Fragment
+ */
 class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
     override val layoutId: Int
@@ -224,20 +222,17 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.realmCheck()
+        viewModel.databaseCheck()
 
         setHasOptionsMenu(true)
 
     }
 
+    /**
+     * Epoxy Conroller creates the ui-elements
+     */
     override fun epoxyController(): MvRxEpoxyController {
         return simpleController(viewModel) { state ->
-
-//            state.evoList.forEach {
-//                it.chain?.species?.name
-//                it.chain?.evolves?.get(0)?.species?.name
-//                it.chain?.evolves?.get(0)?.evoTo?.get(0)?.species3?.name
-//            }
 
             state.pokeList.forEach {
                 pokemon {
@@ -247,39 +242,25 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                     id(it.id)
                     title(it.name)
                     index(it.id.toString())
+                    image(it.imageUri)
 
-                    //Binding Image
-                    onBind { model, view, position -> (view.dataBinding as? ListItemPokemonBinding)?.let { drawee ->
-                        drawee.iVShinyFront.setImageURI(it.imageUri)
-                        }
-                    }
+                    //Types checking and set typecolor
+                    val firstName = it.types?.last()?.type?.name
+                    val firstColor = firstName?.let { it1 -> ColorsTyp.valueOf(it1) }
 
-                    //Types Checking and Color Setting: NEED To Refector
+                    //Set Tyoe and Color
+                    typ1(firstName)
+                    colorHexString(firstColor?.color)
+
                     if (it.types?.size == 2) {
 
-                        val firstN = it.types?.get(0)?.type?.name
-                        val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
+                        val secondName = it.types?.first()?.type?.name
+                        val secondColor = secondName?.let { it1 -> ColorsTyp.valueOf(it1) }
 
-                        val secondN = it.types?.get(1)?.type?.name
-                        val secondC = secondN?.let { it1 -> ColorsTyp.valueOf(it1) }
-
-                        typ1(secondN)
-                        colorHexString(secondC?.color)
-
-                        typ2(firstN)
-                        colorHexString2(firstC?.color)
-
-                    } else {
-                        val firstN = it.types?.get(0)?.type?.name
-                        val firstC = firstN?.let { it1 -> ColorsTyp.valueOf(it1) }
-                        typ1(firstN)
-                        colorHexString(firstC?.color)
-
-                        //2nd Type = Black
-                        colorHexString2("#121212")
+                        typ2(secondName)
+                        colorHexString2(secondColor?.color)
 
                     }
-
 
                     //On CLick Listener which load a new fragment
                     onClick { view: View ->
@@ -294,7 +275,9 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     }
 }
 
-
+/**
+ * set color on textView Types
+ */
 @BindingAdapter("tagColor")
 fun setTagColor(txtView: TextView, colorHexString: String?) {
     val background = txtView.background

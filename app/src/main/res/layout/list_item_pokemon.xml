@@ -10,6 +10,8 @@
         <variable name="index" type="String" />
         <variable name="onClick" type="android.view.View.OnClickListener"/>
 
+        <variable name="image" type="String" />
+
         <variable name="typ1" type="String" />
         <variable name="typ2" type="String" />
 
@@ -18,6 +20,9 @@
 
         <variable name="colorHexString" type="String" />
         <variable name="colorHexString2" type="String" />
+
+        <import type="android.view.View"/>
+
 
     </data>
 
@@ -64,6 +69,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
             <com.facebook.drawee.view.SimpleDraweeView
+                backImage="@{image}"
                 android:id="@+id/iVShinyFront"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
@@ -78,9 +84,9 @@
             <TextView
                 android:id="@+id/typ1"
                 tagColor="@{colorHexString}"
-                android:layout_width="50dp"
+                android:layout_width="60dp"
                 android:layout_height="20dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginEnd="24dp"
                 android:background="@drawable/ic_round"
                 android:gravity="center"
@@ -93,15 +99,17 @@
             <TextView
                 android:id="@+id/typ2"
                 tagColor="@{colorHexString2}"
-                android:layout_width="50dp"
+                android:layout_width="60dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="24dp"
+                android:layout_marginBottom="32dp"
                 android:background="@drawable/ic_round"
                 android:gravity="center"
                 android:text="@{typ2}"
                 android:textColor="@color/colorWhite"
-                android:visibility="visible"
+                android:visibility="@{typ2 == null ? View.GONE : View.VISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/typ1" />
 

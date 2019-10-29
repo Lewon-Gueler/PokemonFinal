@@ -11,6 +11,9 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import de.ffuf.android.architecture.ui.base.binding.activities.BindingMvrxActivity
 import io.realm.Realm
 
+/**
+ * BindingMvrxActivity
+ */
 class MainActivity : BindingMvrxActivity<ActivityMainBinding>() {
     override fun invalidate() {
 

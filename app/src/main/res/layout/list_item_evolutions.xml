@@ -4,7 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable name="imageShinyF" type="String" />
+        <variable name="imageShinyB" type="String" />
+        <variable name="imageShinyWF" type="String" />
+        <variable name="imageShinyWB" type="String" />
 
     </data>
 
@@ -14,6 +17,7 @@
         android:background="@color/colorDarkTheme">
 
         <com.facebook.drawee.view.SimpleDraweeView
+            backImage="@{imageShinyF}"
             android:id="@+id/iVShinyFront"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -25,6 +29,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.facebook.drawee.view.SimpleDraweeView
+            backImage="@{imageShinyB}"
             android:id="@+id/iVShinyBack"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -36,6 +41,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.facebook.drawee.view.SimpleDraweeView
+            backImage="@{imageShinyWF}"
             android:id="@+id/iVShinyWFront"
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -47,6 +53,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         <com.facebook.drawee.view.SimpleDraweeView
+            backImage="@{imageShinyWB}"
             android:id="@+id/iVShinyWBack"
             android:layout_width="150dp"
             android:layout_height="150dp"

@@ -7,18 +7,15 @@
         <variable name="heigth" type="String" />
         <variable name="weigth" type="String" />
         <variable name="title" type="String" />
-        <variable name="info" type="String" />
-
         <variable name="typ1" type="String" />
         <variable name="typ2" type="String" />
-
-
+        <variable name="image" type="String" />
         <variable name="onClick" type="android.view.View.OnClickListener"/>
-
         <variable name="backColor" type="Integer" />
-
         <variable name="colorHexString" type="String" />
         <variable name="colorHexString2" type="String" />
+
+        <import type="android.view.View"/>
 
 
     </data>
@@ -55,110 +52,135 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textH"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Heigth:"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textHeigth"
-                app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-            <TextView
-                android:id="@+id/textHeigth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@{heigth}"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textWeigth"
-                app:layout_constraintTop_toBottomOf="@+id/textName"
-                tools:text="6" />
-
-            <TextView
-                android:id="@+id/textW"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="125dp"
-                android:text="@{weigth}"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textName"
-                tools:text="5" />
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textName">
 
-            <TextView
-                android:id="@+id/textWeigth"
+
+                <TextView
+                    android:id="@+id/textH"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Heigth:"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textHeigth"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textHeigth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@{heigth}"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textWeigth"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="6" />
+
+                <TextView
+                    android:id="@+id/textW"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="@{weigth}"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="5" />
+
+                <TextView
+                    android:id="@+id/textWeigth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Weigth:"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textW"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Weigth:"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/textW"
-                app:layout_constraintTop_toBottomOf="@+id/textName" />
-
-            <TextView
-                android:id="@+id/typMain1"
-                tagColor="@{colorHexString}"
-                android:layout_width="50dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/ic_round"
-                android:gravity="center"
-                android:text="@{typ1}"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
-                android:visibility="visible"
-                app:layout_constraintStart_toEndOf="@+id/typMain2"
-                app:layout_constraintTop_toBottomOf="@+id/textWeigth"
-                tools:text="poison" />
-
-            <TextView
-                android:id="@+id/typMain2"
-                tagColor="@{colorHexString2}"
-                android:layout_width="50dp"
-                android:layout_height="20dp"
-                android:layout_marginStart="143dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/ic_round"
-                android:gravity="center"
-                android:text="@{typ2}"
-                android:textColor="@color/colorWhite"
-                android:textStyle="bold"
-                android:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textH"
-                tools:text="grass" />
-
-            <TextView
-                android:id="@+id/txtInfo"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="24dp"
-                android:text="@{info}"
-                android:textColor="@color/colorWhite"
-                android:textSize="15dp"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/typMain1" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+
+                <TextView
+                    android:id="@+id/typMain1"
+                    tagColor="@{colorHexString}"
+                    android:layout_width="60dp"
+                    android:layout_height="20dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/ic_round"
+                    android:gravity="center"
+                    android:text="@{typ1}"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/typMain2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="typ1" />
+
+                <TextView
+                    android:id="@+id/typMain2"
+                    tagColor="@{colorHexString2}"
+                    android:layout_width="60dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/ic_round"
+                    android:gravity="center"
+                    android:text="@{typ2}"
+                    android:textColor="@color/colorWhite"
+                    android:textStyle="bold"
+                    android:visibility="@{typ2 == null ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="typ2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.facebook.drawee.view.SimpleDraweeView
+            backImage="@{image}"
             android:id="@+id/iVFullImage"
             android:layout_width="200dp"
             android:layout_height="200dp"
