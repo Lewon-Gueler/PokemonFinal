@@ -31,54 +31,51 @@ import retrofit2.Response
 
 
 /**
- * A simple [Fragment] subclass.
- */
-
-
-/**
- * MvRxState with a list
+ * MvRxState
+ * @param emptylist which will be later set and have all the information
  */
 data class PokemonState(val pokeList: List<Pokemon> = emptyList()) : MvRxState
 
 
 /**
- * MvRxViewModel with all logic functions
+ * MvRxViewModel creating network and database instance.
+ * starts the server request functions.
  */
-class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(initialState) {
+class PokemonViewModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(initialState) {
 
     //Creating Realm Instance
-    val realm = Realm.getDefaultInstance()
+    private val realm = Realm.getDefaultInstance()
 
     //Creating Retrofit Instance
-    val pokemonNetwork: DownloadPokemon = DownloadPokemon()
-    val service = pokemonNetwork.service
+    private val pokemonNetwork: DownloadPokemon = DownloadPokemon()
+    private val service = pokemonNetwork.service
 
     //Logging
-    val TAG = "PokemonModel"
+    val TAG = "PokemonViewModel"
 
-    //First Server Request get the amount of pokemons
-   fun getPokemon() {
+    //First Server Request get the amount of pokemon
+    fun getPokemon() {
 
-       service.getAllPokemonDatas(20, 0).enqueue(object : Callback<PokemonList> {
-           override fun onFailure(call: Call<PokemonList>, t: Throwable) {
+        service.getAllPokemonDatas(50, 0).enqueue(object : Callback<PokemonList> {
+            override fun onFailure(call: Call<PokemonList>, t: Throwable) {
 
-               }
+            }
 
-               override fun onResponse(call: Call<PokemonList>, response: Response<PokemonList>) {
-                   response.body()?.results?.forEach { pokemon ->
-                       getPokemonDetails(pokemon)
-                   }
-               }
-           })
-       }
+            override fun onResponse(call: Call<PokemonList>, response: Response<PokemonList>) {
+                response.body()?.results?.forEach { pokemon ->
+                    getPokemonDetails(pokemon)
+                }
+            }
+        })
+    }
 
-    //Second Server Request get the url
+    //Second Server Request get the url for all PokemonDatas
     fun getPokemonDetails(pokemon: Pokemon) {
         val newURL = pokemon.url
 
         //Second Server Request
         newURL?.let {
-            service.getPokeURL(newURL).enqueue(object: Callback<Pokemon> {
+            service.getPokeURL(newURL).enqueue(object : Callback<Pokemon> {
                 override fun onFailure(call: Call<Pokemon>, t: Throwable) {
 
                 }
@@ -87,12 +84,12 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                     val allData = response.body()
                     val newId = allData?.id
 
-                    Log.d(TAG,"Pokemon ID: $newId")
+                    Log.d(TAG, "Pokemon ID: $newId")
                     setOfState(allData)
 
                     //Set url
                     allData?.url = pokemon.url
-                    getPokemonSpcies(allData)
+                    allData?.let { it1 -> getPokemonSpcies(it1) }
 
                 }
             })
@@ -100,13 +97,12 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
     }
 
     //Third Server Request
-    fun getPokemonSpcies(pokemon: Pokemon?) {
-        val speciesURL = pokemon?.species?.url
+    fun getPokemonSpcies(pokemon: Pokemon) {
+        val speciesURL = pokemon.species?.url
 
-        Log.d(TAG,"Pokemon ID for Species: $speciesURL")
+        Log.d(TAG, "Pokemon ID for Species: $speciesURL")
 
-        speciesURL?.let {
-            service.getChain(it).enqueue(object : Callback<Species> {
+        speciesURL?.let { service.getChain(it).enqueue(object : Callback<Species> {
                 override fun onFailure(call: Call<Species>, t: Throwable) {
 
                 }
@@ -129,7 +125,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 
     fun getEvolutionChain(pokemon: Pokemon) {
         val chainURL = pokemon.species?.evoChain?.url
-        Log.d(TAG,"URL for Evo Chain: $chainURL")
+        Log.d(TAG, "URL for Evo Chain: $chainURL")
 
         chainURL?.let {
             service.getEvos(it).enqueue(object : Callback<EvolutionChain> {
@@ -138,6 +134,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                 }
 
                 override fun onResponse(call: Call<EvolutionChain>, response: Response<EvolutionChain>) {
+
                     val body = response.body()
 
                     Log.d(TAG, "Pokemon Evolution Chain Content: $body.")
@@ -154,7 +151,7 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
                         chain = chain.evolves.getOrNull(0)
 
                     }
-
+                    val test = chainURL
                     body?.url = chainURL
                     pokemon.species?.evoChain = body
 
@@ -165,12 +162,31 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         }
     }
 
+//    fun checkChain(chain: Chain?, pokemon: Pokemon, body: EvolutionChain?){
+//
+//        val chainURL = pokemon.species?.evoChain?.url
+//        while (chain != null) {
+//
+//            //Splitt URL to get ID and save in species
+//            val splittetURL = chain.species?.url?.split("/")
+//            chain.species?.id = splittetURL?.get(6)?.toInt()
+//
+//            chain.species?.evoChain = body
+//            chain = chain.evolves.getOrNull(0)
+//
+//        }
+//
+//        body?.url = chainURL
+//        pokemon.species?.evoChain = body
+//    }
+
+
     override fun onCleared() {
         super.onCleared()
         realm.close()
     }
 
-    //Set List in the state
+    //Set list with sorted data and set it into the state
     fun setOfState(datas: Pokemon?) {
         datas?.let {
             setState {
@@ -184,14 +200,15 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
         }
     }
 
-    //fun for saving data in the database
+
+    //function for saving data in realm database
     fun startRealm(pokemonData: Pokemon) {
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(pokemonData)
         realm.commitTransaction()
     }
 
-    //checks if the database is empty or not. If datas are empty starts Server Requests
+    //checks if the database is empty or not. If data are empty it starts Server Requests
     fun databaseCheck() {
         val db = realm.where(Pokemon::class.java).sort("id").findAll()
         val dbp = realm.copyFromRealm(db)
@@ -207,14 +224,14 @@ class PokemonModel(initialState: PokemonState) : MvRxViewModel<PokemonState>(ini
 }
 
 /**
- * Epoxy Fragment
+ * Epoxy Fragment loading fragment layout and create View
  */
 class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
     override val layoutId: Int
         get() = R.layout.fragment_pokemon_main
 
-    private val viewModel: PokemonModel by fragmentViewModel()
+    private val viewViewModel: PokemonViewModel by fragmentViewModel()
 
     override val recyclerView: EpoxyRecyclerView
         get() = binding.recyclerView
@@ -222,21 +239,22 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.databaseCheck()
+        viewViewModel.databaseCheck()
 
         setHasOptionsMenu(true)
 
     }
 
     /**
-     * Epoxy Conroller creates the ui-elements
+     * Epoxy Conroller creates the pokemon xml Layout and generates
+     * ui elemtents which will be set with data from state
      */
     override fun epoxyController(): MvRxEpoxyController {
-        return simpleController(viewModel) { state ->
+        return simpleController(viewViewModel) { state ->
 
             state.pokeList.forEach {
                 pokemon {
-                    Log.d("pokemon exist","${it.id}")
+                    Log.d("pokemon exist", "${it.id}")
 
                     //set UI-Elements
                     id(it.id)
@@ -246,7 +264,8 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                     //Types checking and set typecolor
                     val firstName = it.types?.last()?.type?.name
-                    val firstColor = firstName?.let { it1 -> ColorsTyp.valueOf(it1) }
+                    val firstColor = firstName?.let { typeName ->
+                        ColorsTyp.valueOf(typeName) }
 
                     //Set Tyoe and Color
                     typ1(firstName)
@@ -255,7 +274,8 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
                     if (it.types?.size == 2) {
 
                         val secondName = it.types?.first()?.type?.name
-                        val secondColor = secondName?.let { it1 -> ColorsTyp.valueOf(it1) }
+                        val secondColor = secondName?.let { typeName ->
+                            ColorsTyp.valueOf(typeName) }
 
                         typ2(secondName)
                         colorHexString2(secondColor?.color)
@@ -264,11 +284,12 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
                     //On CLick Listener which load a new fragment
                     onClick { view: View ->
-                        view.findNavController().navigate(R.id.action_pokemonMain_to_pokemonInfo, Bundle().apply {
-                            it.id?.let { it1 -> putInt(MvRx.KEY_ARG, it1) } }
-                        )
+                        view.findNavController()
+                            .navigate(R.id.action_pokemonMain_to_pokemonInfo, Bundle().apply { ->
+                                it.id?.let { pokemonId -> putInt(MvRx.KEY_ARG, pokemonId) }
+                            }
+                            )
                     }
-
                 }
             }
         }
