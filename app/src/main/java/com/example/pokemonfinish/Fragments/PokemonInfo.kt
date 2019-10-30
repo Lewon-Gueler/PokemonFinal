@@ -26,6 +26,7 @@ import com.facebook.drawee.view.SimpleDraweeView
 import com.google.android.material.tabs.TabLayout
 import android.graphics.PorterDuff
 import android.graphics.drawable.LayerDrawable
+import kotlinx.android.synthetic.main.list_item_tabs.view.*
 
 
 /**
@@ -103,7 +104,9 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
      * epoxyController creates and set all ui-elements
      * data: shows general information about the pokemon
      * tabs: Tabbar with 4 items
-     *
+     * stats: progressbar with stats of each pokemon
+     * moves: recyclerview with pokemon moves
+     * evochain: shows the evolution chains with image and level
      */
     override fun epoxyController(): MvRxEpoxyController {
         return simpleController(viewModel) { state ->
@@ -112,6 +115,16 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
             //Set the primaray typ and color
             val firstName = state.pokemon?.types?.last()?.type?.name
             val firstColor = firstName?.let { it1 -> ColorsTyp.valueOf(it1) }
+
+            var secondName: String? = null
+            var secondColor: ColorsTyp? = null
+
+            //Second Type
+            if (state.pokemon?.types?.size == 2) {
+                secondName = state.pokemon.types?.first()?.type?.name
+                secondColor = secondName?.let { it1 -> ColorsTyp.valueOf(it1) }
+
+            }
 
             //create data xml and fill datas
             datas {
@@ -124,28 +137,16 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                 image(state.pokemon?.imageUri)
                 typ1(firstName)
                 colorHexString(firstColor?.color)
-
-                //Second Type
-                if (state.pokemon?.types?.size == 2) {
-                    val secondName = state.pokemon.types?.first()?.type?.name
-                    val secondColor = secondName?.let { it1 -> ColorsTyp.valueOf(it1) }
-
-                    typ2(secondName)
-                    colorHexString2(secondColor?.color)
-                }
-
+                typ2(secondName)
+                colorHexString2(secondColor?.color)
             }
 
             //creating the tab bar
             tabs {
                 id(0)
-//            tab1("STATS")
-//            tab2("SHINY")
-//            tab3("MOVES")
-//            tab4("EVOS")
-
                 onBind { model, view, position ->
                     (view.dataBinding as? ListItemTabsBinding)?.let {
+                        it.TabLayout.getTabAt(0)?.select()
                         it.TabLayout.addOnTabSelectedListener(object :
                             TabLayout.OnTabSelectedListener {
                             override fun onTabReselected(p0: TabLayout.Tab?) {
@@ -164,8 +165,6 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                     }
                 }
             }
-
-
 
 
             //starts when expression depends on the selected Tab
@@ -250,7 +249,6 @@ class PokemonInfo : EpoxyFragment<FragmentPokemonInfoBinding>() {
                         afterName = chain?.species?.name
                         firstImage = secondImage
                         secondImage = chain?.species?.imageUri
-
 
                     }
 

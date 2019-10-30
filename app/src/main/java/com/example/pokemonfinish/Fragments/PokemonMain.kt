@@ -25,9 +25,10 @@ import de.ffuf.android.architecture.mvrx.MvRxViewModel
 import de.ffuf.android.architecture.mvrx.simpleController
 import de.ffuf.android.architecture.ui.base.binding.fragments.EpoxyFragment
 import io.realm.Realm
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 /**
@@ -53,133 +54,103 @@ class PokemonViewModel(initialState: PokemonState) : MvRxViewModel<PokemonState>
     //Logging
     val TAG = "PokemonViewModel"
 
-    //First Server Request get the amount of pokemon
-    fun getPokemon() {
+    //starts the first Server Request with an limit of Pokemons
+    fun getPokemonAsync() {
+        CoroutineScope(Dispatchers.IO).launch {
 
-        service.getAllPokemonDatas(50, 0).enqueue(object : Callback<PokemonList> {
-            override fun onFailure(call: Call<PokemonList>, t: Throwable) {
-
-            }
-
-            override fun onResponse(call: Call<PokemonList>, response: Response<PokemonList>) {
-                response.body()?.results?.forEach { pokemon ->
-                    getPokemonDetails(pokemon)
+            val response = service.getAllPokemonDatas(50, 0)
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    response.body()?.results?.forEach { pokemon ->
+                        getPokemonDetailsAsync(pokemon)
+                    }
+                } else {
+                    Log.d(TAG, "Error: ${response.code()}")
                 }
             }
-        })
-    }
-
-    //Second Server Request get the url for all PokemonDatas
-    fun getPokemonDetails(pokemon: Pokemon) {
-        val newURL = pokemon.url
-
-        //Second Server Request
-        newURL?.let {
-            service.getPokeURL(newURL).enqueue(object : Callback<Pokemon> {
-                override fun onFailure(call: Call<Pokemon>, t: Throwable) {
-
-                }
-
-                override fun onResponse(call: Call<Pokemon>, response: Response<Pokemon>) {
-                    val allData = response.body()
-                    val newId = allData?.id
-
-                    Log.d(TAG, "Pokemon ID: $newId")
-                    setOfState(allData)
-
-                    //Set url
-                    allData?.url = pokemon.url
-                    allData?.let { it1 -> getPokemonSpcies(it1) }
-
-                }
-            })
         }
     }
 
-    //Third Server Request
-    fun getPokemonSpcies(pokemon: Pokemon) {
-        val speciesURL = pokemon.species?.url
+    fun getPokemonDetailsAsync(pokemon: Pokemon) {
+        val newURL = pokemon.url
+        CoroutineScope(Dispatchers.IO).launch {
 
-        Log.d(TAG, "Pokemon ID for Species: $speciesURL")
-
-        speciesURL?.let { service.getChain(it).enqueue(object : Callback<Species> {
-                override fun onFailure(call: Call<Species>, t: Throwable) {
-
+            val response = newURL?.let { service.getPokeURL(it) }
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful == true) {
+                    onPokemmonDetailSuccess(response.body(),pokemon)
+                } else {
+                    Log.d(TAG, "Error: ${response?.code()}")
                 }
+            }
+        }
+    }
 
-                override fun onResponse(call: Call<Species>, response: Response<Species>) {
+    fun getPokemonSpciesAsync(pokemon: Pokemon) {
+        val speciesURL = pokemon.species?.url
+        CoroutineScope(Dispatchers.IO).launch {
 
-                    val resSpec = response.body()
-                    Log.d(TAG, "ChainURL: $resSpec")
+            val response = speciesURL?.let { service.getChain(it) }
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful == true) {
 
                     //Set url from species
-                    resSpec?.url = pokemon.species?.url
+                    val resSpec = response.body()
+                    resSpec?.url = pokemon.species?.url!!
                     pokemon.species = resSpec
 
-                    getEvolutionChain(pokemon)
+                    getEvolutionChainAsync(pokemon)
 
+                } else {
+                    Log.d(TAG, "Error: ${response?.code()}")
                 }
-            })
+            }
         }
     }
 
-    fun getEvolutionChain(pokemon: Pokemon) {
+    fun getEvolutionChainAsync(pokemon:Pokemon) {
         val chainURL = pokemon.species?.evoChain?.url
-        Log.d(TAG, "URL for Evo Chain: $chainURL")
+        CoroutineScope(Dispatchers.IO).launch {
 
-        chainURL?.let {
-            service.getEvos(it).enqueue(object : Callback<EvolutionChain> {
-                override fun onFailure(call: Call<EvolutionChain>, t: Throwable) {
-                    Log.d("ohNoo", "${t.message}")
+            val response = chainURL?.let { service.getEvos(it) }
+            withContext(Dispatchers.Main) {
+                if (response?.isSuccessful == true) {
+                    onChainSuccess(pokemon, response.body())
+                    savePokemon(pokemon)
+
+                } else {
+                    Log.d(TAG, "Error: ${response?.code()}")
                 }
-
-                override fun onResponse(call: Call<EvolutionChain>, response: Response<EvolutionChain>) {
-
-                    val body = response.body()
-
-                    Log.d(TAG, "Pokemon Evolution Chain Content: $body.")
-
-                    var chain = body?.chain
-
-                    while (chain != null) {
-
-                        //Splitt URL to get ID and save in species
-                        val splittetURL = chain.species?.url?.split("/")
-                        chain.species?.id = splittetURL?.get(6)?.toInt()
-
-                        chain.species?.evoChain = body
-                        chain = chain.evolves.getOrNull(0)
-
-                    }
-                    val test = chainURL
-                    body?.url = chainURL
-                    pokemon.species?.evoChain = body
-
-                    startRealm(pokemon)
-
-                }
-            })
+            }
         }
     }
 
-//    fun checkChain(chain: Chain?, pokemon: Pokemon, body: EvolutionChain?){
-//
-//        val chainURL = pokemon.species?.evoChain?.url
-//        while (chain != null) {
-//
-//            //Splitt URL to get ID and save in species
-//            val splittetURL = chain.species?.url?.split("/")
-//            chain.species?.id = splittetURL?.get(6)?.toInt()
-//
-//            chain.species?.evoChain = body
-//            chain = chain.evolves.getOrNull(0)
-//
-//        }
-//
-//        body?.url = chainURL
-//        pokemon.species?.evoChain = body
-//    }
+    fun onPokemmonDetailSuccess(res: Pokemon?, pokemon: Pokemon?) {
+        val allData = res
+        setOfState(allData)
+        //Set url
+        allData?.url = pokemon?.url
+        allData?.let { getPokemonSpciesAsync(it) }
+    }
 
+    fun onChainSuccess(pokemon: Pokemon, body: EvolutionChain?){
+
+        var chain = body?.chain
+        val chainURL = pokemon.species?.evoChain?.url
+        while (chain != null) {
+
+            //Splitt URL to get ID and save in species
+            val splittetURL = chain.species?.url?.split("/")
+            chain.species?.id = splittetURL?.get(6)?.toInt()
+
+            chain.species?.evoChain = body
+            chain = chain.evolves.getOrNull(0)
+
+        }
+        body?.url = chainURL
+        pokemon.species?.evoChain = body
+
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -202,19 +173,19 @@ class PokemonViewModel(initialState: PokemonState) : MvRxViewModel<PokemonState>
 
 
     //function for saving data in realm database
-    fun startRealm(pokemonData: Pokemon) {
+    fun savePokemon(pokemonData: Pokemon) {
         realm.beginTransaction()
         realm.copyToRealmOrUpdate(pokemonData)
         realm.commitTransaction()
     }
 
     //checks if the database is empty or not. If data are empty it starts Server Requests
-    fun databaseCheck() {
+    fun dataBinding() {
         val db = realm.where(Pokemon::class.java).sort("id").findAll()
         val dbp = realm.copyFromRealm(db)
 
         if (db.isEmpty()) {
-            getPokemon()
+            getPokemonAsync()
         } else {
             setState {
                 copy(pokeList = dbp)
@@ -225,6 +196,7 @@ class PokemonViewModel(initialState: PokemonState) : MvRxViewModel<PokemonState>
 
 /**
  * Epoxy Fragment loading fragment layout and create View
+ * bind recyclerView
  */
 class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
 
@@ -239,48 +211,40 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewViewModel.databaseCheck()
+        viewViewModel.dataBinding()
 
         setHasOptionsMenu(true)
 
     }
 
     /**
-     * Epoxy Conroller creates the pokemon xml Layout and generates
-     * ui elemtents which will be set with data from state
+     * Epoxy Controller creates the pokemon xml Layout and generates
+     * ui elements which will be set with data from state
      */
-    override fun epoxyController(): MvRxEpoxyController {
-        return simpleController(viewViewModel) { state ->
+    override fun epoxyController(): MvRxEpoxyController = simpleController(viewViewModel) { state ->
 
             state.pokeList.forEach {
-                pokemon {
-                    Log.d("pokemon exist", "${it.id}")
+                val firstName = it.types?.last()?.type?.name
+                val firstColor = firstName?.let { typeName ->
+                    ColorsTyp.valueOf(typeName) }
+                var secondName: String? = null
+                var secondColor: ColorsTyp? = null
+                if (it.types?.size == 2) {
+                    secondName = it.types?.first()?.type?.name
+                    secondColor = secondName?.let { typeName -> ColorsTyp.valueOf(typeName) }
+                }
 
+                pokemon {
                     //set UI-Elements
                     id(it.id)
                     title(it.name)
                     index(it.id.toString())
                     image(it.imageUri)
-
-                    //Types checking and set typecolor
-                    val firstName = it.types?.last()?.type?.name
-                    val firstColor = firstName?.let { typeName ->
-                        ColorsTyp.valueOf(typeName) }
-
-                    //Set Tyoe and Color
                     typ1(firstName)
                     colorHexString(firstColor?.color)
+                    typ2(secondName)
+                    colorHexString2(secondColor?.color)
 
-                    if (it.types?.size == 2) {
-
-                        val secondName = it.types?.first()?.type?.name
-                        val secondColor = secondName?.let { typeName ->
-                            ColorsTyp.valueOf(typeName) }
-
-                        typ2(secondName)
-                        colorHexString2(secondColor?.color)
-
-                    }
 
                     //On CLick Listener which load a new fragment
                     onClick { view: View ->
@@ -294,7 +258,7 @@ class PokemonMain : EpoxyFragment<FragmentPokemonMainBinding>() {
             }
         }
     }
-}
+
 
 /**
  * set color on textView Types

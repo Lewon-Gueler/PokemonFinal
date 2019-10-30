@@ -41,6 +41,9 @@ dependencies {
     //Navigation Fragment
     def nav_version = "2.1.0"
 
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.1'
+
     //Design
     implementation 'com.google.android.material:material:1.0.0'
 
